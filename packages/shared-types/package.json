@@ -31,11 +31,10 @@
     "README.md"
   ],
   "devDependencies": {
-    "@dawlabs/tsconfig": "workspace:*",
-    "@types/node": "workspace:*",
-    "eslint": "workspace:*",
-    "jest": "workspace:*",
-    "tsup": "workspace:*",
-    "typescript": "workspace:*"
+    "@types/node": "^22.15.3",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "tsup": "^8.5.1",
+    "typescript": "5.9.2"
   }
 }
