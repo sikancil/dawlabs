@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "tsup src/index.ts --target node18 --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --target node18 --format esm,cjs --dts --watch",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint . --max-warnings 0",
