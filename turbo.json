@@ -1,15 +1,4 @@
 {
-  "_comment": {
-    "title": "DAWLabs Turborepo Configuration",
-    "description": "Comprehensive task orchestration configuration for DAWLabs monorepo using Turborepo. This configuration defines all development workflows with proper dependency management, caching strategies, and output patterns for optimized build performance.",
-    "features": [
-      "Intelligent caching based on inputs and dependencies",
-      "Persistent task support for development servers",
-      "Proper task dependency chains for efficient builds",
-      "Environment variable configuration",
-      "Coverage and build output management"
-    ]
-  },
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
   "globalEnv": ["NODE_ENV"],
