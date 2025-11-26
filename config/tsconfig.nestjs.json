@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs NestJS",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // NestJS Specific
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "types": ["node"],
+
+    // NestJS Decorator Support
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+
+    // Build Options
+    "outDir": "dist",
+    "rootDir": "src",
+
+    // NestJS Compatibility
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "coverage", "test/**/*", "**/*.test.ts", "**/*.spec.ts"]
+}

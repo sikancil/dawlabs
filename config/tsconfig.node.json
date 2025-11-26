@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs Node.js",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // Node.js Specific
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+
+    // Node.js Compatibility
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    // Build Options
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "coverage", "**/*.test.ts", "**/*.spec.ts"]
+}

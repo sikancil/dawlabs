@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs Browser",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // Browser Specific
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": [],
+
+    // Browser Compatibility
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    // Build Options
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "coverage", "**/*.test.ts", "**/*.spec.ts"]
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs Monorepo",
+  "extends": "./config/tsconfig.base.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/shared-types"
+    }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@dawlabs/shared-types": ["./packages/shared-types/src"],
+      "@dawlabs/shared-types/*": ["./packages/shared-types/src/*"],
+      "@config/*": ["./config/*"]
+    }
+  }
+}

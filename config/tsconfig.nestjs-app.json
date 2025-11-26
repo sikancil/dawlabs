@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs NestJS Application",
+  "extends": "./tsconfig.nestjs.json",
+  "compilerOptions": {
+    // Application Specific
+    "outDir": "dist",
+    "rootDir": "src",
+
+    // NestJS App Configuration
+    "incremental": true,
+    "tsBuildInfoFile": "dist/.tsbuildinfo",
+
+    // Path Mapping (app-specific)
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/test/*": ["test/*"],
+      "@app/*": ["src/app/*"],
+      "@config/*": ["src/config/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "coverage", "test/**/*"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
+}

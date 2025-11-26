@@ -1,0 +1,41 @@
+{
+  "name": "@dawlabs/shared-types",
+  "version": "0.0.1",
+  "description": "Shared TypeScript types for DAWLabs packages",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "dawlabs",
+    "types",
+    "typescript",
+    "shared"
+  ],
+  "author": "Arif Widiyanto <arif@dawlabs.dev>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@dawlabs/tsconfig": "workspace:*",
+    "@types/node": "workspace:*",
+    "eslint": "workspace:*",
+    "jest": "workspace:*",
+    "tsup": "workspace:*",
+    "typescript": "workspace:*"
+  }
+}

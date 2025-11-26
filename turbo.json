@@ -1,0 +1,88 @@
+{
+  "_comment": {
+    "title": "DAWLabs Turborepo Configuration",
+    "description": "Comprehensive task orchestration configuration for DAWLabs monorepo using Turborepo. This configuration defines all development workflows with proper dependency management, caching strategies, and output patterns for optimized build performance.",
+    "features": [
+      "Intelligent caching based on inputs and dependencies",
+      "Persistent task support for development servers",
+      "Proper task dependency chains for efficient builds",
+      "Environment variable configuration",
+      "Coverage and build output management"
+    ]
+  },
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "tui",
+  "globalEnv": ["NODE_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "tsconfig.json", "tsup.config.*"],
+      "outputs": ["dist/**", "lib/**", "build/**"],
+      "cache": true
+    },
+    "build:nest": {
+      "dependsOn": ["^build:nest", "^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "nest-cli.json", "tsconfig.json"],
+      "outputs": ["dist/**"],
+      "cache": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "eslint.config.*", ".eslintrc.*"],
+      "cache": true
+    },
+    "lint:fix": {
+      "dependsOn": ["^lint:fix"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "eslint.config.*", ".eslintrc.*"],
+      "cache": false
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
+      "outputs": ["tsconfig.tsbuildinfo"],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["^test", "build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "test:watch": {
+      "dependsOn": ["^test:watch"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*"],
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "dependsOn": ["^test:coverage", "build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "test:e2e": {
+      "dependsOn": ["^build", "build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "test/jest-e2e.json"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "start": {
+      "dependsOn": ["build", "build:nest"],
+      "cache": false,
+      "persistent": true
+    },
+    "start:dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false,
+      "outputs": []
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs CLI",
+  "extends": "./tsconfig.node.json",
+  "compilerOptions": {
+    // CLI Specific
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+
+    // CLI Build Options
+    "outDir": "dist",
+    "rootDir": "src",
+
+    // CLI Optimization
+    "removeComments": true,
+    "stripInternal": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "coverage", "**/*.test.ts", "**/*.spec.ts"]
+}

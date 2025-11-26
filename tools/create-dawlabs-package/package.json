@@ -1,0 +1,27 @@
+{
+  "name": "@dawlabs/create-package",
+  "version": "0.0.1",
+  "description": "CLI tool to create DAWLabs packages",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "create-dawlabs-package": "./dist/index.js",
+    "dawlabs": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup index.js --target node18 --format esm --out-dir dist",
+    "dev": "node index.js",
+    "check-types": "tsc --noEmit"
+  },
+  "keywords": [
+    "dawlabs",
+    "cli",
+    "generator",
+    "template"
+  ],
+  "author": "Arif Widiyanto <arif@dawlabs.dev>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
