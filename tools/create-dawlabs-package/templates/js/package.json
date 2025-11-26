@@ -1,0 +1,50 @@
+{
+  "name": "{{packageName}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --max-warnings 3",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "dawlabs",
+    "javascript",
+    "library",
+    "{{type}}"
+  ],
+  "author": "{{author}}",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.0.0",
+    "jest": "^30.2.0",
+    "tsup": "^8.5.1"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

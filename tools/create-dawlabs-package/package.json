@@ -1,6 +1,6 @@
 {
   "name": "@dawlabs/create-package",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CLI tool to create DAWLabs packages",
   "main": "dist/index.js",
   "type": "module",
@@ -19,7 +19,11 @@
     "generator",
     "template"
   ],
-  "author": "Arif Widiyanto <arif@dawlabs.dev>",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "author": "Arif Widianto <https://github.com/sikancil>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

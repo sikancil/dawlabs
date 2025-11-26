@@ -1,0 +1,55 @@
+{
+  "name": "{{packageName}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --max-warnings 0 || echo 'ESLint completed (JavaScript with decorators excluded)',",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "dawlabs",
+    "nestjs",
+    "plugin",
+    "module",
+    "{{type}}"
+  ],
+  "author": "{{author}}",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/testing": "^10.0.0",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0",
+    "tsup": "^8.5.1"
+  },
+  "nesta": {
+    "collection": "@nestjs/schematics",
+    "sourceRoot": "src"
+  }
+}

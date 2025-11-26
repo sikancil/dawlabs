@@ -1,282 +1,342 @@
-# DAWLabs Package Generator CLI
+# @dawlabs/create-package
 
-> A powerful CLI tool for scaffolding DAWLabs packages with comprehensive template support for both JavaScript and TypeScript projects.
+CLI tool to create DAWLabs packages from predefined templates
 
-## 🚀 Overview
+## Installation
 
-The `create-dawlabs-package` CLI is a comprehensive package generator that creates standardized boilerplate code for various types of DAWLabs packages. It supports 12 different package templates with built-in build configurations, testing setups, and development workflows.
-
-## 📦 Installation
-
-### Global Installation
 ```bash
 npm install -g @dawlabs/create-package
 # or
 pnpm add -g @dawlabs/create-package
+# or
+yarn global add @dawlabs/create-package
 ```
 
-### npx Usage (Recommended)
+## Usage
+
+### Quick Start
+
 ```bash
-npx @dawlabs/create-package <type> <name>
-```
-
-### Local Usage (In Monorepo)
-```bash
-node tools/create-dawlabs-package/index.js <type> <name>
-```
-
-### Short Alias
-```bash
-npx dawlabs <type> <name>
-```
-
-## 🛠️ Available Package Templates
-
-### JavaScript Templates
-
-| Type | Description | Build Config |
-|------|-------------|--------------|
-| `cli-tool` | CLI tool with executable output | `build.config.cli.js` |
-| `js-nestjs-app` | NestJS application (JavaScript) | `build.config.nestjs.js` |
-| `js-nestjs-plugin` | NestJS plugin/module package (JavaScript) | `build.config.nestjs.js` |
-| `node-lib` | Node.js library for server-side packages (JavaScript) | `build.config.node.js` |
-| `browser-lib` | Browser library for frontend packages (JavaScript) | `build.config.browser.js` |
-| `js` | Pure JavaScript library | `build.config.js.js` |
-
-### TypeScript Templates
-
-| Type | Description | Build Config |
-|------|-------------|--------------|
-| `nestjs-app` | NestJS application (TypeScript) | `build.config.nestjs.js` |
-| `nestjs-plugin` | NestJS plugin/module package (TypeScript) | `build.config.nestjs.js` |
-| `ts-cli-tool` | CLI tool with executable output (TypeScript) | `build.config.cli.js` |
-| `ts-node-lib` | Node.js library for server-side packages (TypeScript) | `build.config.node.js` |
-| `ts-browser-lib` | Browser library for frontend packages (TypeScript) | `build.config.browser.js` |
-| `ts` | TypeScript library with full type safety | `build.config.ts.js` |
-
-## 🚀 Usage
-
-### Basic Usage
-```bash
+# Create a new package
 create-dawlabs-package <type> <name>
-```
 
-### Examples
-```bash
-# Create a CLI tool (TypeScript)
-create-dawlabs-package ts-cli-tool my-awesome-cli
-
-# Create a NestJS application (TypeScript)
+# Examples
+create-dawlabs-package cli-tool my-cli
 create-dawlabs-package nestjs-app my-api
-
-# Create a utility library (JavaScript)
 create-dawlabs-package node-lib my-utils
-
-# Create a browser library (TypeScript)
-create-dawlabs-package ts-browser-lib my-ui-lib
-
-# Create a NestJS plugin (JavaScript)
-create-dawlabs-package js-nestjs-plugin my-nestjs-module
-
-# Create a pure TypeScript library
-create-dawlabs-package ts my-ts-lib
 ```
 
-### Advanced Options
+### Available Package Types
+
+The CLI tool supports 12 package templates:
+
+#### JavaScript Templates
+
+- `cli-tool` - CLI tool with executable output
+- `node-lib` - Node.js library for server-side packages
+- `browser-lib` - Browser library for frontend packages
+- `js` - Pure JavaScript library
+- `nestjs-app` - NestJS application
+- `nestjs-plugin` - NestJS plugin/module package
+
+#### TypeScript Templates
+
+- `ts-cli-tool` - CLI tool with executable output
+- `ts-node-lib` - Node.js library for server-side packages
+- `ts-browser-lib` - Browser library for frontend packages
+- `ts` - TypeScript library with full type safety
+- `ts-nestjs-app` - NestJS application
+- `ts-nestjs-plugin` - NestJS plugin/module package
+
+### Command Options
 
 ```bash
-create-dawlabs-package <type> <name> [options]
+Usage: create-dawlabs-package <type> <name> [options]
+
+Package Types:
+  cli-tool          CLI tool with executable output (JavaScript)
+  nestjs-app        NestJS application (TypeScript)
+  node-lib          Node.js library for server-side packages (JavaScript)
+  browser-lib       Browser library for frontend packages (JavaScript)
+  js                Pure JavaScript library
+  ts                TypeScript library with full type safety
+  js-nestjs-app     NestJS application (JavaScript)
+  ts-cli-tool       CLI tool with executable output (TypeScript)
+  ts-node-lib       Node.js library for server-side packages (TypeScript)
+  ts-browser-lib    Browser library for frontend packages (TypeScript)
+  nestjs-plugin     NestJS plugin/module package (TypeScript)
+  js-nestjs-plugin  NestJS plugin/module package (JavaScript)
+
+Examples:
+  create-dawlabs-package cli-tool my-cli
+  create-dawlabs-package nestjs-app my-api
+  create-dawlabs-package node-lib my-utils
+  create-dawlabs-package browser-lib my-ui-lib
+  create-dawlabs-package js my-js-lib
+  create-dawlabs-package ts my-ts-lib
+  create-dawlabs-package nestjs-plugin my-nestjs-module
+
+Options:
+  --packages-dir <dir>  Packages directory (default: packages)
+  --description <text>   Package description
+  --author <email>      Author email (default: arif@dawlabs.dev)
+  --help              Show this help
 ```
 
-#### Options
+### Advanced Usage
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--packages-dir <dir>` | Custom packages directory | `packages` |
-| `--description <text>` | Custom package description | Auto-generated |
-| `--author <email>` | Package author email | `arif@dawlabs.dev` |
-| `--help` | Show help information | - |
-
-#### Example with Options
 ```bash
-create-dawlabs-package ts-node-lib my-utils \
-  --packages-dir "packages" \
-  --description "My utility library for DAWLabs" \
-  --author "my-email@example.com"
+# Create package with custom description
+create-dawlabs-package cli-tool my-awesome-cli --description "An awesome CLI tool"
+
+# Create package in custom directory
+create-dawlabs-package node-lib my-lib --packages-dir ./projects
+
+# Create package with custom author
+create-dawlabs-package ts my-types-lib --author "developer@company.com"
+
+# Show help
+create-dawlabs-package --help
 ```
 
-## 🏗️ Template Features
+## Generated Package Structure
 
-### Built-in Features
-
-All templates include:
-
-- **Modern Build System**: Configured with tsup for fast builds
-- **Testing Setup**: Jest with proper ES module support
-- **Linting**: ESLint v9 with flat configuration format
-- **Code Formatting**: Prettier with consistent style
-- **TypeScript Support**: Strict type checking (for TS templates)
-- **Development Scripts**: Common npm scripts for development workflow
-- **VSCode Integration**: Editor settings and recommendations (TypeScript packages)
-
-### NestJS Templates
-
-Both TypeScript and JavaScript NestJS templates include:
-
-- **Decorator Support**: Proper experimental decorators configuration
-- **Module Structure**: Standard NestJS module layout
-- **Testing Framework**: NestJS testing utilities
-- **Build Optimization**: Optimized for server deployment
-- **Configuration Management**: Environment-based configuration
-
-### Browser Library Templates
-
-- **Universal Module Definition (UMD)**: Works with CommonJS, AMD, and global
-- **Type Declarations**: TypeScript definitions included
-- **Bundle Optimization**: Tree-shakable exports
-- **Development Setup**: Development server with hot reload
-
-### CLI Tool Templates
-
-- **Executable Binaries**: Proper shebang and executable permissions
-- **Command Parsing**: Commander.js for robust CLI argument handling
-- **Help System**: Automatic help generation
-- **Error Handling**: Graceful error handling and user feedback
-
-## 📁 Package Structure
-
-Generated packages follow this structure:
+### CLI Tool (js-cli-tool / ts-cli-tool)
 
 ```
-packages/
-└── my-package/
-    ├── src/
-    │   ├── index.ts           # Main entry point
-    │   ├── index.test.ts      # Unit tests
-    │   └── ...               # Package-specific files
-    ├── .vscode/
-    │   └── settings.json     # Editor settings (TypeScript packages)
-    ├── package.json          # Package configuration
-    ├── tsconfig.json         # TypeScript configuration (TypeScript packages)
-    ├── tsup.config.ts        # Build configuration
-    ├── jest.config.js        # Testing configuration
-    ├── README.md             # Package documentation
-    └── .eslintignore         # ESLint ignore patterns
+my-cli/
+├── package.json
+├── tsconfig.json
+├── eslint.config.js
+├── jest.config.js
+├── tsup.config.ts
+├── src/
+│   ├── cli.ts
+│   ├── commands/
+│   │   └── run.ts
+│   ├── services/
+│   │   └── cli.service.ts
+│   └── __tests__/
+│       └── cli.test.ts
+├── dist/
+│   ├── cli.cjs
+│   └── cli.cjs.map
+└── README.md
 ```
 
-## 🛠️ Development Workflow
+### Library (js-node-lib / ts-node-lib)
 
-After creating a package:
+```
+my-lib/
+├── package.json
+├── tsconfig.json
+├── eslint.config.js
+├── jest.config.js
+├── tsup.config.ts
+├── src/
+│   ├── index.ts
+│   ├── lib/
+│   │   └── my-lib.service.ts
+│   └── __tests__/
+│       └── index.test.ts
+├── dist/
+│   ├── index.js
+│   ├── index.cjs
+│   ├── index.global.js
+│   ├── index.d.ts
+│   └── *.map files
+└── README.md
+```
 
-1. **Navigate to the package directory**:
-   ```bash
-   cd packages/my-package
-   ```
+### Browser Library (js-browser-lib / ts-browser-lib)
 
-2. **Install dependencies**:
-   ```bash
-   pnpm install
-   ```
+```
+my-browser-lib/
+├── package.json
+├── tsconfig.json
+├── eslint.config.js
+├── jest.config.js
+├── tsup.config.ts
+├── src/
+│   ├── index.ts
+│   ├── browser/
+│   │   └── my-browser-lib.ts
+│   └── __tests__/
+│       └── browser.test.ts
+├── dist/
+│   ├── index.js
+│   ├── index.cjs
+│   ├── index.global.js
+│   ├── index.d.ts
+│   └── *.map files
+└── README.md
+```
 
-3. **Start development**:
-   ```bash
-   pnpm dev
-   ```
+### NestJS Application (js-nestjs-app / ts-nestjs-app)
 
-4. **Run tests**:
-   ```bash
-   pnpm test
-   ```
+```
+my-app/
+├── package.json
+├── tsconfig.json
+├── eslint.config.js
+├── jest.config.js
+├── nest-cli.json
+├── src/
+│   ├── main.ts
+│   ├── app.module.ts
+│   ├── app.controller.ts
+│   ├── app.service.ts
+│   ├── dto/
+│   └── __tests__/
+├── dist/
+└── README.md
+```
 
-5. **Build for production**:
-   ```bash
-   pnpm build
-   ```
+### NestJS Plugin (js-nestjs-plugin / ts-nestjs-plugin)
 
-6. **Lint and fix**:
-   ```bash
-   pnpm lint:fix
-   ```
+```
+my-plugin/
+├── package.json
+├── tsconfig.json
+├── eslint.config.js
+├── jest.config.js
+├── tsup.config.ts
+├── src/
+│   ├── index.ts
+│   ├── my-plugin.module.ts
+│   ├── my-plugin.service.ts
+│   ├── my-plugin.controller.ts
+│   ├── interfaces/
+│   └── __tests__/
+├── dist/
+└── README.md
+```
 
-## 📝 Template Variables
+## Development
 
-The CLI automatically replaces the following variables in templates:
+### Setup
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `{{name}}` | Package name (kebab-case) | `my-package` |
-| `{{className}}` | Package name (PascalCase) | `MyPackage` |
-| `{{camelCase}}` | Package name (camelCase) | `myPackage` |
-| `{{snakeCase}}` | Package name (snake_case) | `my_package` |
-| `{{constantCase}}` | Package name (CONSTANT_CASE) | `MY_PACKAGE` |
-| `{{packageName}}` | Full npm package name | `@dawlabs/my-package` |
-| `{{description}}` | Package description | Custom or auto-generated |
-| `{{author}}` | Package author | `arif@dawlabs.dev` |
-| `{{type}}` | Package type identifier | `ts-node-lib` |
+```bash
+# Clone the repository
+git clone https://github.com/sikancil/dawlabs.git
+cd dawlabs/tools/create-dawlabs-package
 
-## 🚨 Experimental Features
+# Install dependencies
+pnpm install
 
-### JavaScript NestJS Support
+# Build the CLI
+pnpm build
 
-JavaScript NestJS templates (`js-nestjs-app`, `js-nestjs-plugin`) are marked as experimental because:
+# Run in development mode
+pnpm dev
 
-- They rely on runtime decorator support via the monorepo infrastructure
-- They use the existing TypeScript configuration for decorator support
-- Build warnings may appear during compilation
+# Run tests
+pnpm test
 
-These templates are fully functional but require careful testing when used in production environments.
+# Type checking
+pnpm check-types
+```
 
-## 🔧 Configuration Files
+### Template Structure
 
-The CLI uses several configuration files for template generation:
+```
+templates/
+├── js/                   # Pure JavaScript library
+├── js-cli-tool/          # JavaScript CLI tool
+├── js-node-lib/          # JavaScript Node.js library
+├── js-browser-lib/       # JavaScript browser library
+├── js-nestjs-app/        # JavaScript NestJS application
+├── js-nestjs-plugin/     # JavaScript NestJS plugin
+├── ts/                   # TypeScript library
+├── ts-cli-tool/          # TypeScript CLI tool
+├── ts-node-lib/          # TypeScript Node.js library
+├── ts-browser-lib/       # TypeScript browser library
+├── ts-nestjs-app/        # TypeScript NestJS application
+├── ts-nestjs-plugin/     # TypeScript NestJS plugin
+└── .vscode/              # VSCode settings and snippets
+```
 
-- **Build Configs**: Located in `/config/build.config.*.js`
-- **TypeScript Configs**: Located in `/config/tsconfig.*.json`
-- **ESLint Configs**: Located in `/config/eslint.*.js`
+### Template Variables
 
-These files are automatically selected based on the package type and provide optimal default settings for each type of package.
+Templates use the following variables:
 
-## 🐛 Troubleshooting
+- `{{name}}` - Package name (kebab-case)
+- `{{className}}` - Package class name (PascalCase)
+- `{{description}}` - Package description
+- `{{author}}` - Package author email
+
+### Adding New Templates
+
+1. Create a new directory in `templates/`
+2. Add package.json with template variables
+3. Create source files with template variables
+4. Add appropriate configuration files (eslint, jest, etc.)
+5. Add README.md with template variables
+6. Update the main CLI to include the new template type
+
+## Configuration
+
+### Environment Variables
+
+- `NODE_ENV` - Environment (development/production)
+- `PACKAGES_DIR` - Default packages directory (can be overridden with
+  --packages-dir)
+
+### Customization
+
+You can customize templates by modifying files in the `templates/` directory:
+
+- Update package.json templates for different dependencies
+- Modify source code templates for different patterns
+- Adjust configuration files for different build setups
+- Add new template variables as needed
+
+## Troubleshooting
 
 ### Common Issues
 
-1. **Permission Denied**: Ensure the CLI has execute permissions
-2. **Template Not Found**: Verify all configuration files are present in `/config/`
-3. **Build Failures**: Check that all dependencies are installed with `pnpm install`
-4. **TypeScript Errors**: Ensure TypeScript templates have proper configuration
+**Template Generation Failed**
+
+- Check if the packages directory exists
+- Verify you have write permissions
+- Ensure the package name is valid
+
+**Build Errors**
+
+- Check Node.js version compatibility
+- Verify all dependencies are installed
+- Check TypeScript configuration
+
+**Missing Dependencies**
+
+- Run `pnpm install` in the generated package directory
+- Check package.json for missing dependencies
 
 ### Getting Help
 
 ```bash
-# Show all available package types and options
+# Show available templates
 create-dawlabs-package --help
 
-# Show specific help for a package type
-create-dawlabs-package <type> --help
+# Show version
+create-dawlabs-package --version
+
+# Check if CLI is installed
+create-dawlabs-package --version
 ```
 
-## 🤝 Contributing
+## Contributing
 
-To add new package templates or modify existing ones:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-1. Navigate to `/tools/create-dawlabs-package/templates/`
-2. Create a new template directory following the naming convention
-3. Add template configuration to `PACKAGE_TYPES` in `index.js`
-4. Create appropriate build configuration in `/config/`
-5. Test the new template thoroughly
+## License
 
-## 📄 License
-
-MIT License - see LICENSE file for details.
-
-## 🔗 Related Links
-
-- [DAWLabs Monorepo](https://github.com/dawlabs/arifwidianto)
-- [Turborepo Documentation](https://turbo.build/repo/docs)
-- [tsup Documentation](https://tsup.egoist.dev/)
-- [NestJS Documentation](https://docs.nestjs.com/)
-- [ESLint v9 Documentation](https://eslint.org/docs/latest/)
+MIT
 
 ---
 
-**Built with ❤️ by [DAWLabs Team](https://github.com/dawlabs)**
+**DAWLabs Built with ❤️ by [arifWidianto](https://github.com/sikancil)**

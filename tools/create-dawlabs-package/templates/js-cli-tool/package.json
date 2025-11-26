@@ -1,0 +1,44 @@
+{
+  "name": "{{packageName}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "main": "dist/index.js",
+  "bin": {
+    "{{name}}": "dist/cli.cjs"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist",
+    "start": "node dist/cli.cjs"
+  },
+  "keywords": [
+    "dawlabs",
+    "cli",
+    "{{type}}"
+  ],
+  "author": "{{author}}",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "dependencies": {
+    "commander": "^14.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "tsup": "^8.5.1"
+  }
+}
