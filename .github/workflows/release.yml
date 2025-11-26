@@ -4,17 +4,18 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
-  id-token: write  # REQUIRED for OIDC authentication
+  id-token: write # REQUIRED for OIDC authentication
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    environment: production  # Matches npm trusted publishing setting
+    environment: production # Matches npm trusted publishing setting
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -25,7 +26,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: 'https://registry.npmjs.org'  # OIDC authentication
+          registry-url: "https://registry.npmjs.org" # OIDC authentication
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
