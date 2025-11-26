@@ -7,6 +7,8 @@
 
 import js from '@eslint/js';
 import globals from 'globals';
+import typescript from '@typescript-eslint/eslint-plugin';
+import typescriptParser from '@typescript-eslint/parser';
 
 export default [
   js.configs.recommended,
@@ -44,13 +46,20 @@ export default [
   {
     files: ['**/*.ts'],
     languageOptions: {
-      parser: '@typescript-eslint/parser',
+      parser: typescriptParser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
-    rules: {},
+    plugins: {
+      '@typescript-eslint': typescript,
+    },
+    rules: {
+      // TypeScript specific rules
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
   },
   {
     ignores: [

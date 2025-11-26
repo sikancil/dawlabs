@@ -11,7 +11,16 @@
   "scripts": {
     "build": "tsup index.js --target node18 --format esm --out-dir dist",
     "dev": "node index.js",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "eslint": "^9.39.1",
+    "tsup": "^8.5.1",
+    "typescript": "5.9.2"
   },
   "keywords": [
     "dawlabs",

@@ -1,0 +1,95 @@
+{
+  "_comment": {
+    "purpose": "Default configuration for DAWLabs deployment setup",
+    "version": "1.0.0",
+    "description": "This configuration file contains default settings and templates for deployment setup across the DAWLabs monorepo."
+  },
+  "defaults": {
+    "packageManager": "pnpm",
+    "nodeVersion": "20",
+    "environment": "production",
+    "workflowName": "Release",
+    "workflowFile": ".github/workflows/release.yml"
+  },
+  "npm": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "scope": "@dawlabs",
+    "provenance": true,
+    "trustedPublishing": {
+      "enabled": true,
+      "requiredPermissions": ["contents: write", "pull-requests: write", "id-token: write"]
+    }
+  },
+  "github": {
+    "defaultBranch": "main",
+    "requiredEnvironments": ["production"],
+    "workflowTriggers": {
+      "on": {
+        "push": ["main"],
+        "workflow_dispatch": {}
+      }
+    },
+    "permissions": {
+      "contents": "write",
+      "pull-requests": "write",
+      "id-token": "write"
+    }
+  },
+  "monorepo": {
+    "structure": {
+      "apps": "apps/*",
+      "packages": "packages/*",
+      "tools": "tools/*"
+    },
+    "requiredWorkspaces": ["packages/*", "tools/*"],
+    "optionalWorkspaces": ["apps/*"],
+    "buildOrchestration": "turbo",
+    "versionManagement": "changesets"
+  },
+  "validation": {
+    "packageJson": {
+      "required": ["name", "version", "description"],
+      "recommended": ["repository", "author", "license", "keywords", "engines"],
+      "scopedPackages": {
+        "requirePublishConfig": true,
+        "defaultAccess": "public"
+      }
+    },
+    "workflow": {
+      "requiredActions": [
+        "actions/checkout@v4",
+        "actions/setup-node@v4",
+        "pnpm/action-setup@v4",
+        "actions/cache@v4",
+        "changesets/action@v1"
+      ],
+      "requiredPermissions": ["contents: write", "pull-requests: write", "id-token: write"],
+      "requiredJobs": ["release"]
+    }
+  },
+  "templates": {
+    "workflowPath": ".github/workflows/release.yml",
+    "packagePaths": {
+      "cli": "tools/*",
+      "library": "packages/*",
+      "app": "apps/*"
+    }
+  },
+  "diagnostics": {
+    "checks": [
+      "gitRepository",
+      "githubAuth",
+      "npmAuth",
+      "workflowFile",
+      "workspaceConfig",
+      "packageConfigs",
+      "environmentSetup"
+    ],
+    "severity": {
+      "critical": ["workflowFile", "githubAuth", "npmAuth"],
+      "warning": ["packageConfigs", "workspaceConfig"],
+      "info": ["gitRepository", "environmentSetup"]
+    }
+  }
+}

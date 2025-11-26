@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { resolve, join, dirname } from 'path';
+import { join, dirname } from 'path';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
 import { fileURLToPath } from 'url';
 
@@ -77,7 +77,7 @@ Usage: create-dawlabs-package <type> <name> [options]
 
 Package Types:
 ${Object.entries(PACKAGE_TYPES)
-  .map(([key, value]) => `  ${key.padEnd(12)} ${value.description}`)
+  .map(([key, value]) => `    ${key.padEnd(12)} ${value.description}`)
   .join('\n')}
 
 Examples:
@@ -167,10 +167,10 @@ function createPackage(type, name, options = {}) {
   }
 
   console.log(`✅ Package created: ${packageDir}`);
-  console.log(`\nNext steps:`);
+  console.log('\nNext steps:');
   console.log(`  cd ${packageDir}`);
-  console.log(`  pnpm install`);
-  console.log(`  pnpm dev`);
+  console.log('  pnpm install');
+  console.log('  pnpm dev');
 }
 
 function copyTemplate(templateDir, packageDir, vars) {
@@ -293,8 +293,10 @@ const isMainModule = () => {
     const currentFileName = currentFile.split(pathSeparator).pop();
 
     // Check if the executed file is a known binary name and current file is index.js
-    if ((executedFileName === 'create-dawlabs-package' || executedFileName === 'dawlabs') &&
-        currentFileName === 'index.js') {
+    if (
+      (executedFileName === 'create-dawlabs-package' || executedFileName === 'dawlabs') &&
+      currentFileName === 'index.js'
+    ) {
       return true;
     }
 
@@ -304,7 +306,7 @@ const isMainModule = () => {
     }
 
     // Method 4: Additional fallback - normalize paths and compare
-    const normalizePath = (path) => {
+    const normalizePath = path => {
       return path.replace(/^\/private\//, '/');
     };
 
