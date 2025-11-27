@@ -59,10 +59,10 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          # This expects you to have a script called version which does a release build
-          version: pnpm version-packages
-          # This will run the build script if a release PR is merged, or if there are changesets left to publish
-          publish: pnpm release
+          # Use pnpm-specific commands for workspace compatibility
+          version: pnpm changeset version
+          # Use recursive publishing for all workspace packages
+          publish: pnpm publish -r
           commit: "chore: version packages"
           title: "chore: version packages"
         env:
