@@ -4,6 +4,7 @@
   "description": "Semi-automated deployment setup and verification for DAWLabs packages",
   "main": "index.js",
   "type": "module",
+  "private": true,
   "bin": {
     "dawlabs-deploy": "./index.js",
     "deployment-setup": "./index.js"
