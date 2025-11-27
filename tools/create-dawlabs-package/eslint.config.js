@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
@@ -24,7 +25,6 @@ export default [
       'comma-dangle': ['error', 'always-multiline'],
       quotes: ['error', 'single', { avoidEscape: true }],
       semi: ['error', 'always'],
-      indent: ['error', 2, { SwitchCase: 1 }],
       'max-len': ['warn', { code: 100, ignoreUrls: true }],
       'no-trailing-spaces': 'error',
       'eol-last': 'error',
@@ -33,4 +33,6 @@ export default [
   {
     ignores: ['node_modules/**', 'dist/**', 'templates/**', '__unused/**'],
   },
+  // Prettier configuration must be last to disable conflicting ESLint rules
+  prettierConfig,
 ];

@@ -9,6 +9,7 @@ import js from '@eslint/js';
 import globals from 'globals';
 import typescript from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
@@ -72,4 +73,6 @@ export default [
       '**/.turbo/**',
     ],
   },
+  // Prettier configuration must be last to disable conflicting ESLint rules
+  prettierConfig,
 ];
