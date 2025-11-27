@@ -1,10 +1,9 @@
 /** @type {import('jest').Config} */
-export default {
+module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^@dawlabs/shared-types$': '<rootDir>/../../packages/shared-types/src/index',
   },
   transform: {
     '^.+\\.ts$': 'ts-jest',
@@ -15,5 +14,5 @@ export default {
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: [],
   moduleFileExtensions: ['ts', 'js', 'json'],
-  roots: ['<rootDir>/src', '<rootDir>/test'],
+  roots: ['<rootDir>/src'],
 };

@@ -40,4 +40,4 @@ export interface {{className}}Event {
 }
 
 // Re-export shared types
-export * from '@dawlabs/shared-types';
+// Shared types can be defined here as needed

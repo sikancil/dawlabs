@@ -34,6 +34,9 @@
     "dist",
     "README.md"
   ],
+  "dependencies": {
+    "commander": "^14.0.2"
+  },
   "devDependencies": {
     "@types/node": "^22.15.3",
     "@typescript-eslint/eslint-plugin": "^8.48.0",

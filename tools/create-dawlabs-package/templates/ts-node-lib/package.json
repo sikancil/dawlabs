@@ -40,9 +40,7 @@
     "tsup": "^8.5.1",
     "typescript": "^5.9.2"
   },
-  "dependencies": {
-    "@dawlabs/shared-types": "workspace:*"
-  },
+  "dependencies": {},
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

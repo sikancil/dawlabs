@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+// Templates are in the source directory, not the dist directory
 const TEMPLATES_DIR = join(__dirname, 'templates');
 
 const PACKAGE_TYPES = {

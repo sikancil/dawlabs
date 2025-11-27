@@ -29,9 +29,9 @@
  */
 
 // Re-export shared types
-// Note: Shared types are available via @dawlabs/shared-types package
+// Note: Shared types are available via // Shared types can be defined here as needed package
 // Uncomment the line below if you want to re-export shared types
-// export * from '@dawlabs/shared-types';
+// // Shared types can be defined here as needed
 
 // Export interfaces for TypeScript compatibility (if needed)
 export const {{className}}Config = {};

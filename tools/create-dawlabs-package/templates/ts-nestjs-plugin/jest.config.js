@@ -4,7 +4,7 @@ export default {
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^@dawlabs/shared-types$': '<rootDir>/../../packages/shared-types/src/index',
+    '^// Shared types can be defined here as needed$': '<rootDir>/../../packages/shared-types/src/index',
   },
   transform: {
     '^.+\\.ts$': [

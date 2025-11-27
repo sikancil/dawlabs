@@ -1,20 +1,28 @@
-import tseslint from '@typescript-eslint/eslint-plugin';
-import tsparser from '@typescript-eslint/parser';
-import typescriptConfig from './eslint.typescript.js';
-
-export default [
-  ...typescriptConfig,
+module.exports = [
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      '*.config.js',
+      '*.config.ts',
+      'jest.config.js',
+      'tsup.config.ts',
+    ],
+  },
+  {
+    files: ['**/*.ts'],
     languageOptions: {
-      parser: tsparser,
+      parser: require('@typescript-eslint/parser'),
       parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
         project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
     plugins: {
-      '@typescript-eslint': tseslint,
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
     },
     rules: {
       // NestJS specific rules
@@ -27,10 +35,10 @@ export default [
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
+          'argsIgnorePattern': '^_',
+          'varsIgnorePattern': '^_',
+          'caughtErrorsIgnorePattern': '^_'
+        }
       ],
 
       // Allow more flexibility for NestJS patterns

@@ -40,6 +40,7 @@ export default [
       '**/packages/*/dist/**', // Package-specific dist directories
       '**/packages/*/build/**', // Package-specific build directories
       '**/apps/*/dist/**', // Application-specific dist directories
+      '**/tools/create-dawlabs-package/templates/**', // Template files with placeholders
     ],
   },
 ];
