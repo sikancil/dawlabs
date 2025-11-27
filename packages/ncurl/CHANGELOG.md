@@ -1,5 +1,12 @@
 # @dawlabs/ncurl
 
+## 0.0.4
+
+### Patch Changes
+
+- Confirm OIDC trusted publishing is working properly. v0.0.2 was successfully
+  published via GitHub Actions workflow.
+
 ## 0.0.3
 
 ### Patch Changes
