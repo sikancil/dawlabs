@@ -6,9 +6,7 @@
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "skipLibCheck": true
   },
   "include": ["tsup.config.ts"]
 }
