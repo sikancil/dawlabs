@@ -7,5 +7,6 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [],
+  "___comment": "NestJS-style release configuration - generate comprehensive changelogs and proper GitHub releases"
 }

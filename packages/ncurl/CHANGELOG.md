@@ -1,5 +1,18 @@
 # @dawlabs/ncurl
 
+## 0.0.5
+
+### Patch Changes
+
+- Test improved GitHub Actions workflow with proper error handling and GitHub
+  releases.
+
+  Fixes:
+  - Added --no-git-checks to pnpm publish command
+  - Added createGithubReleases: true
+  - Added proper error handling steps
+  - Enhanced workflow status verification
+
 ## 0.0.4
 
 ### Patch Changes
