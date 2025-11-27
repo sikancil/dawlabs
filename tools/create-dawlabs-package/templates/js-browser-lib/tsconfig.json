@@ -1,13 +1,17 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs Browser Library JavaScript",
+  "extends": "../../config/tsconfig.browser.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    // JavaScript Specific
     "allowJs": true,
     "checkJs": false,
+    "declaration": false,
+    "declarationMap": false,
     "noEmit": true,
-    "skipLibCheck": true,
-    "lib": ["DOM", "ESNext"]
+    "skipLibCheck": true
   },
-  "include": ["tsup.config.ts"]
+  "include": [
+    "tsup.config.ts"
+  ]
 }

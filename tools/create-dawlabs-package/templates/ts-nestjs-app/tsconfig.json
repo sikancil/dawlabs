@@ -1,24 +1,29 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs NestJS App TypeScript",
+  "extends": "../../config/tsconfig.nestjs.json",
   "compilerOptions": {
-    "module": "commonjs",
+    // TypeScript Specific Overrides
     "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
+    "declarationMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     }
-  }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "test/**/*",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }

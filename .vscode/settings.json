@@ -22,5 +22,32 @@
   },
   "[markdown]": {
     "editor.defaultFormatter": null
-  }
+  },
+  // Ignore linting and TypeScript diagnostics for templates directory
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": false,
+  "eslint.rules.customizations": [
+    {
+      "rule": "*",
+      "severity": "off"
+    }
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "files.watcherExclude": {
+    "**/tools/create-dawlabs-package/templates/**": true
+  },
+  "search.exclude": {
+    "**/tools/create-dawlabs-package/templates/**": true
+  },
+  "typescript.preferences.excludePackageJson": {
+    "**/tools/create-dawlabs-package/templates/**": true
+  },
+  "typescript.disableAutomaticTypeAcquisition": true
 }

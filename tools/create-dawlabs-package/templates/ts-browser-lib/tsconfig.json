@@ -1,13 +1,22 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs Browser Library TypeScript",
   "extends": "../../config/tsconfig.browser.json",
   "compilerOptions": {
+    // TypeScript Specific Overrides
     "outDir": "./dist",
     "rootDir": "./src",
     "composite": true,
     "declaration": true,
-    "declarationMap": true,
-    "lib": ["DOM", "ESNext"]
+    "declarationMap": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }

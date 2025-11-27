@@ -1,14 +1,17 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "DAWLabs NestJS Plugin JavaScript",
+  "extends": "../../config/tsconfig.nestjs.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    // JavaScript Specific
     "allowJs": true,
     "checkJs": false,
+    "declaration": false,
+    "declarationMap": false,
     "noEmit": true,
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "skipLibCheck": true
   },
-  "include": ["tsup.config.ts"]
+  "include": [
+    "tsup.config.ts"
+  ]
 }
