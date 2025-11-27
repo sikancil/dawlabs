@@ -1,6 +1,6 @@
 {
   "name": "@dawlabs/ncurl",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A curl clone optimized for LLM cognitive patterns with intelligent HTTP inference",
   "main": "dist/index.js",
   "bin": {
