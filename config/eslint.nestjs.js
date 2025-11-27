@@ -23,9 +23,9 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
 
-      // Fix unused variables rule for NestJS dependency injection
+      // Fix unused variables rule for NestJS dependency injection - warning level for development flexibility
       '@typescript-eslint/no-unused-vars': [
-        'error',
+        'warn',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',

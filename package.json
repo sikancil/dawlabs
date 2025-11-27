@@ -45,17 +45,17 @@
     "typescript"
   ],
   "author": {
-    "name": "Arif Widiyanto",
-    "email": "arif@dawlabs.dev",
+    "name": "Arif Widianto",
+    "email": "dimas.arif.widianto@gmail.com",
     "url": "https://github.com/sikancil"
   },
-  "homepage": "https://github.com/dawlabs/arifwidianto#readme",
+  "homepage": "https://github.com/sikancil/dawlabs#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dawlabs/arifwidianto.git"
+    "url": "git+https://github.com/sikancil/dawlabs.git"
   },
   "bugs": {
-    "url": "https://github.com/dawlabs/arifwidianto/issues"
+    "url": "https://github.com/sikancil/dawlabs/issues"
   },
   "license": "MIT",
   "devDependencies": {

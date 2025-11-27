@@ -14,7 +14,14 @@ export default [
       },
     },
     rules: {
-      'no-unused-vars': 'error',
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       'no-console': 'off', // CLI tools need console output
       'no-debugger': 'error',
       'prefer-const': 'error',

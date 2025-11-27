@@ -34,7 +34,7 @@
     "config/**/*",
     "README.md"
   ],
-  "author": "Arif Widianto <arif@dawlabs.dev>",
+  "author": "Arif Widianto <https://github.com/sikancil>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

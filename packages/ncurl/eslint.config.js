@@ -4,7 +4,7 @@ export default [
   eslint.configs.recommended,
   {
     files: ['src/**/*.js'],
-    ignores: ['src/**/*.test.js', 'src/**/*.spec.js'],
+    ignores: ['src/**/*.test.js', 'src/**/*.spec.js', 'test/**/*'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -15,10 +15,18 @@ export default [
         __dirname: 'readonly',
         __filename: 'readonly',
         global: 'readonly',
+        URL: 'readonly',
       },
     },
     rules: {
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_'}],
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       'no-console': 'off', // Allow console in CLI tools
       'prefer-const': 'error',
       'no-var': 'error',
@@ -53,8 +61,8 @@ export default [
       'coverage/**',
       'node_modules/**',
       '*.min.js',
-      '**/*.config.ts',
-      '**/*.config.js',
+      'test/**/*', // Exclude test files
+      'tsup.config.*', // Exclude tsup config files
     ],
   },
 ];

@@ -41,6 +41,11 @@ export default [
       '**/packages/*/build/**', // Package-specific build directories
       '**/apps/*/dist/**', // Application-specific dist directories
       '**/tools/create-dawlabs-package/templates/**', // Template files with placeholders
+      '**/packages/*/test/**', // Test directories not in tsconfig
+      '**/packages/*/tsup.config.*', // Tsup config files not in tsconfig
+      '**/packages/*/jest.config.*', // Jest config files
+      '**/packages/*/.vscode/**', // VSCode config
+      '**/packages/*/.git/**', // Git directories
     ],
   },
 ];

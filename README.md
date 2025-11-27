@@ -46,7 +46,7 @@ dawlabs/
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/dawlabs/arifwidianto.git
+git clone https://github.com/sikancil/dawlabs.git
 cd arifwidianto
 ```
 
@@ -137,7 +137,7 @@ Example package.json for a new package:
     "check-types": "tsc --noEmit"
   },
   "keywords": ["dawlabs"],
-  "author": "Arif Widiyanto <arif@dawlabs.dev>",
+  "author": "Arif Widianto <https://github.com/sikancil>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -218,4 +218,4 @@ All packages in this monorepo are licensed under the MIT License.
 
 ---
 
-**Built with ❤️ by [Arif Widiyanto](https://github.com/sikancil)**
+**Built with ❤️ by [Arif Widianto](https://github.com/sikancil)**

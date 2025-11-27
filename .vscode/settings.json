@@ -7,8 +7,8 @@
   // Disable auto-formatting on save
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": false,
-    "source.organizeImports": false
+    "source.fixAll.eslint": "never",
+    "source.organizeImports": "never"
   },
   // Disable default formatters
   "[javascript]": {
@@ -49,5 +49,18 @@
   "typescript.preferences.excludePackageJson": {
     "**/tools/create-dawlabs-package/templates/**": true
   },
-  "typescript.disableAutomaticTypeAcquisition": true
+  "typescript.disableAutomaticTypeAcquisition": true,
+
+  // TypeScript language server optimizations for monorepo
+  "typescript.tsserver.maxTsServerMemory": 8192,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+
+  // Ignore TypeScript errors in templates (known VSCode path resolution issue)
+  "typescript.tsserver.watchOptions": {
+    "excludeDirectories": ["**/templates/**", "**/node_modules/**", "**/dist/**", "**/coverage/**"]
+  },
+
+  // Additional ignores for better IDE performance
+  "typescript.suggestionActions.enabled": false,
+  "typescript.tsc.autoDetect": "off"
 }

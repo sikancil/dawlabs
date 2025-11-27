@@ -39,13 +39,13 @@ export const createNestjsConfig = (options = {}) => {
     banner: options.banner || {
       js: `/**
  * NestJS Application
- * @author Arif Widiyanto <arif@dawlabs.dev>
+ * @author Arif Widianto <https://github.com/sikancil>
  * @license MIT
  */`,
     },
 
     // Preserve decorators metadata
-    esbuildOptions: (options, esbuild) => {
+    esbuildOptions: (options, _esbuild) => {
       // Ensure decorators are preserved
       options.supported = {
         ...options.supported,

@@ -9,9 +9,11 @@
     "declaration": false,
     "declarationMap": false,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    // Override rootDir to point to this package's src directory
+    "rootDir": "."
   },
-  "include": [
-    "tsup.config.ts"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["tsup.config.ts"]
 }

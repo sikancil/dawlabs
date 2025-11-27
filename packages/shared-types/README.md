@@ -65,7 +65,7 @@ const packageInfo: PackageInfo = {
   name: '@dawlabs/my-package',
   version: '1.0.0',
   description: 'My awesome DAWLabs package',
-  author: 'Arif Widiyanto <arif@dawlabs.dev>',
+  author: 'Arif Widianto <https://github.com/sikancil>',
   license: 'MIT',
 };
 ```
@@ -380,7 +380,7 @@ export class PackageBuilder {
 // Usage
 const packageInfo = new PackageBuilder('@dawlabs/my-lib', '1.0.0')
   .setDescription('My awesome library')
-  .setAuthor('Arif Widiyanto <arif@dawlabs.dev>')
+  .setAuthor('Arif Widianto <https://github.com/sikancil>')
   .build();
 ```
 
@@ -436,4 +436,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**Built with ❤️ by [DAWLabs Team](https://github.com/dawlabs)**
+**Built with ❤️ by [DAWLabs Team](https://github.com/sikancil/dawlabs)**

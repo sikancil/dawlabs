@@ -1,0 +1,45 @@
+{
+  "name": "@dawlabs/ncurl",
+  "version": "0.0.1",
+  "description": "A curl clone optimized for LLM cognitive patterns with intelligent HTTP inference",
+  "main": "dist/index.js",
+  "bin": {
+    "ncurl": "dist/cli.cjs"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist",
+    "start": "node dist/cli.cjs"
+  },
+  "keywords": [
+    "dawlabs",
+    "cli",
+    "cli-tool"
+  ],
+  "author": "arif@dawlabs.dev",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "dependencies": {
+    "commander": "^14.0.2",
+    "undici": "^7.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "tsup": "^8.5.1"
+  }
+}

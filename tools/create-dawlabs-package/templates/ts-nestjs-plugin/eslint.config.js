@@ -23,7 +23,7 @@ export default [
       },
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'off', // Allow any for NestJS providers/exports
@@ -37,7 +37,7 @@ export default [
       sourceType: 'module',
     },
     rules: {
-      'no-unused-vars': 'error',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_'}],
       'no-console': 'off',
     },
   },

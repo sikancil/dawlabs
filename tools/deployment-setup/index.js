@@ -1,37 +1,57 @@
 #!/usr/bin/env node
 
+/**
+ * DAWLabs Deployment Setup Tool
+ *
+ * A comprehensive CLI tool for automating deployment configuration and verification across
+ * DAWLabs monorepo packages. This tool handles:
+ * - NPM publishing configurations with proper tokens and registry settings
+ * - CI/CD workflow setup and validation
+ * - Repository configuration (git hooks, permissions, etc.)
+ * - System diagnostics and environment verification
+ * - Complete deployment pipeline setup
+ *
+ * Architecture: Modular command structure with separate modules for each deployment aspect
+ * Error Handling: Comprehensive error handling with helpful user guidance
+ * Environment: Works across different development and deployment environments
+ */
+
 import { Command } from 'commander';
 import chalk from 'chalk';
+
+// Commented but reserved for potential future use with file operations
 // import { fileURLToPath } from 'url';
 // import { dirname } from 'path';
 
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
 
-// Import command modules
-import { setupNpmPublishing } from './commands/npm-publishing.js';
-import { verifyCicdWorkflow } from './commands/cicd-workflow.js';
-import { setupRepositoryConfig } from './commands/repository-setup.js';
-import { diagnoseSystem } from './commands/diagnostics.js';
-import { setupAll } from './commands/setup-all.js';
+// Import command modules - each handles a specific deployment aspect
+import { setupNpmPublishing } from './commands/npm-publishing.js'; // NPM registry and publishing setup
+import { verifyCicdWorkflow } from './commands/cicd-workflow.js'; // CI/CD pipeline configuration
+import { setupRepositoryConfig } from './commands/repository-setup.js'; // Git repository setup
+import { diagnoseSystem } from './commands/diagnostics.js'; // Environment diagnostics
+import { setupAll } from './commands/setup-all.js'; // Complete deployment setup
 
 const program = new Command();
 
-// Configure CLI
+// Configure CLI with deployment-specific options
+// The tool is designed to be user-friendly with colored output and verbose debugging capabilities
 program
   .name('dawlabs-deploy')
   .description('Semi-automated deployment setup and verification for DAWLabs packages')
   .version('0.0.1')
-  .option('-v, --verbose', 'enable verbose output')
-  .option('--no-color', 'disable colored output');
+  .option('-v, --verbose', 'enable verbose output for debugging and detailed operation logs')
+  .option('--no-color', "disable colored output for environments that don't support ANSI colors");
 
-// Setup commands
+// Setup command with comprehensive deployment configuration options
+// This is the main command for setting up various deployment aspects
 program
   .command('setup')
-  .description('Setup deployment configurations')
-  .argument('<type>', 'type of setup (npm-publishing, cicd-workflow, repository, all)')
-  .option('--interactive', 'interactive setup with prompts')
-  .option('--auto-verify', 'automatically verify after setup')
+  .description('Setup deployment configurations for different deployment targets')
+  .argument('<type>', 'type of setup: npm-publishing, cicd-workflow, repository, all')
+  .option('--interactive', 'interactive setup with user-friendly prompts and guidance')
+  .option('--auto-verify', 'automatically verify configuration after setup completion')
   .action(async (type, options) => {
     try {
       console.log(chalk.blue.bold(`\n🚀 Setting up ${type}...\n`));

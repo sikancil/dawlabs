@@ -21,7 +21,7 @@
     "typescript",
     "shared"
   ],
-  "author": "Arif Widiyanto <arif@dawlabs.dev>",
+  "author": "Arif Widianto <https://github.com/sikancil>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

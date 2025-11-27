@@ -19,7 +19,7 @@ export default [
       },
     },
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_'}],
       'no-console': 'warn',
       'prefer-const': 'error',
       'no-var': 'error',

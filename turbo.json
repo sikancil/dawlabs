@@ -3,72 +3,136 @@
   "ui": "tui",
   "globalEnv": ["NODE_ENV"],
   "tasks": {
+    /**
+     * Build task for general packages (libraries, tools, etc.)
+     * Dependencies: ^build ensures dependent packages are built first
+     * Cache: True for performance - builds are cached based on inputs/outputs
+     */
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "tsconfig.json", "tsup.config.*"],
       "outputs": ["dist/**", "lib/**", "build/**"],
       "cache": true
     },
+    /**
+     * NestJS-specific build task
+     * Dependencies: ^build:nest for dependency graph, ^build for shared libraries
+     * Cache: True for consistent performance in development
+     */
     "build:nest": {
       "dependsOn": ["^build:nest", "^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "nest-cli.json", "tsconfig.json"],
       "outputs": ["dist/**"],
       "cache": true
     },
+    /**
+     * ESLint validation task
+     * Dependencies: ^lint for dependency graph analysis
+     * Cache: True for performance - lint results are cached
+     */
     "lint": {
       "dependsOn": ["^lint"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "eslint.config.*", ".eslintrc.*"],
       "cache": true
     },
+    /**
+     * ESLint fix task
+     * Cache: False because fixes modify source files and should always run
+     */
     "lint:fix": {
       "dependsOn": ["^lint:fix"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "eslint.config.*", ".eslintrc.*"],
       "cache": false
     },
+    /**
+     * TypeScript type checking task
+     * Dependencies: ^check-types for incremental compilation
+     * Cache: True for performance with tsbuildinfo
+     */
     "check-types": {
       "dependsOn": ["^check-types"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig.json"],
       "outputs": ["tsconfig.tsbuildinfo"],
       "cache": true
     },
+    /**
+     * Unit test execution task
+     * Dependencies: ^test for dependency graph, build for compiled assets
+     * Cache: True for performance - test results and coverage are cached
+     */
     "test": {
       "dependsOn": ["^test", "build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*"],
       "outputs": ["coverage/**"],
       "cache": true
     },
+    /**
+     * Test watch mode for development
+     * Cache: False for real-time file watching
+     * Persistent: True for continuous test execution
+     */
     "test:watch": {
       "dependsOn": ["^test:watch"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*"],
       "cache": false,
       "persistent": true
     },
+    /**
+     * Test execution with coverage reporting
+     * Dependencies: ^test:coverage for dependency graph, build for compiled assets
+     * Cache: True for performance - coverage reports are cached
+     */
     "test:coverage": {
       "dependsOn": ["^test:coverage", "build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*"],
       "outputs": ["coverage/**"],
       "cache": true
     },
+    /**
+     * End-to-end test execution
+     * Dependencies: build for all required packages and services
+     * Cache: True for performance - e2e test results are cached
+     */
     "test:e2e": {
       "dependsOn": ["^build", "build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "test/jest-e2e.json"],
       "outputs": ["coverage/**"],
       "cache": true
     },
+    /**
+     * Development server task
+     * Cache: False for real-time development
+     * Persistent: True for continuous serving
+     */
     "dev": {
       "cache": false,
       "persistent": true,
       "dependsOn": ["^build"]
     },
+    /**
+     * Production start task
+     * Dependencies: All build tasks completed before serving
+     * Cache: False as this is a runtime operation
+     */
     "start": {
       "dependsOn": ["build", "build:nest"],
       "cache": false,
       "persistent": true
     },
+    /**
+     * Development start task
+     * Cache: False for development environment
+     * Persistent: True for continuous serving
+     */
     "start:dev": {
       "cache": false,
       "persistent": true
     },
+    /**
+     * Cleanup task for removing build artifacts
+     * Cache: False as this always needs to run
+     * Outputs: None - this is a destructive cleanup operation
+     */
     "clean": {
       "cache": false,
       "outputs": []

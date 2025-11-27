@@ -1,74 +1,129 @@
 #!/usr/bin/env node
 
+/**
+ * DAWLabs Package Generator
+ *
+ * A sophisticated CLI tool for generating new packages within the DAWLabs monorepo with
+ * proper structure, configuration, and build setups. This tool ensures:
+ * - Consistent package structure across all package types
+ * - Proper build configurations with LLM-friendly features
+ * - Optimized development workflows with TypeScript/JavaScript support
+ * - Ready-to-use ESLint, Jest, and build tooling configurations
+ * - Monorepo integration with proper workspace configuration
+ *
+ * Architecture: Template-based generation with variable substitution
+ * Templates: Comprehensive collection for different package types and purposes
+ * Configuration: Automatic setup of build configs, ESLint, TypeScript, and testing
+ * Integration: Seamless monorepo workspace integration
+ */
+
 import { join, dirname } from 'path';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-// Templates are in the source directory, not the dist directory
+
+// Templates directory location - contains all package generation templates
+// Note: Templates are in the source directory, not the dist directory
 const TEMPLATES_DIR = join(__dirname, 'templates');
 
+/**
+ * Package type definitions with their corresponding templates and build configurations
+ * Each type is optimized for specific use cases and development patterns
+ */
 const PACKAGE_TYPES = {
   'cli-tool': {
     description: 'CLI tool with executable output (JavaScript)',
     template: 'js-cli-tool',
     buildConfig: 'build.config.cli.js',
+    features: ['LLM-friendly error handling', 'shebang support', 'bundled distribution'],
   },
   'nestjs-app': {
     description: 'NestJS application (TypeScript)',
     template: 'ts-nestjs-app',
     buildConfig: 'build.config.nestjs.js',
+    features: [
+      'TypeScript support',
+      'dependency injection',
+      'decorator metadata',
+      'modular architecture',
+    ],
   },
   'node-lib': {
     description: 'Node.js library for server-side packages (JavaScript)',
     template: 'js-node-lib',
     buildConfig: 'build.config.node.js',
+    features: ['CommonJS output', 'Node.js optimized', 'dual CJS/ESM support'],
   },
   'browser-lib': {
     description: 'Browser library for frontend packages (JavaScript)',
     template: 'js-browser-lib',
     buildConfig: 'build.config.browser.js',
+    features: ['ES modules', 'browser optimized', 'tree-shakable', 'no Node.js dependencies'],
   },
   js: {
     description: 'Pure JavaScript library',
     template: 'js',
     buildConfig: 'build.config.js.js',
+    features: ['Universal JavaScript', 'ES modules output', 'TypeScript build support'],
   },
   ts: {
     description: 'TypeScript library with full type safety',
     template: 'ts',
     buildConfig: 'build.config.ts.js',
+    features: ['Full TypeScript', 'declaration files', 'type safety', 'IDE support'],
   },
   'js-nestjs-app': {
     description: 'NestJS application (JavaScript)',
     template: 'js-nestjs-app',
     buildConfig: 'build.config.nestjs.js',
+    features: [
+      'JavaScript NestJS',
+      'dependency injection',
+      'decorator support',
+      'modular architecture',
+    ],
   },
   'ts-cli-tool': {
     description: 'CLI tool with executable output (TypeScript)',
     template: 'ts-cli-tool',
     buildConfig: 'build.config.cli.js',
+    features: ['TypeScript CLI', 'LLM-friendly error handling', 'shebang support', 'type safety'],
   },
   'ts-node-lib': {
     description: 'Node.js library for server-side packages (TypeScript)',
     template: 'ts-node-lib',
     buildConfig: 'build.config.node.js',
+    features: ['TypeScript Node.js', 'declaration files', 'dual CJS/ESM output', 'type safety'],
   },
   'ts-browser-lib': {
     description: 'Browser library for frontend packages (TypeScript)',
     template: 'ts-browser-lib',
     buildConfig: 'build.config.browser.js',
+    features: ['TypeScript browser', 'tree-shakable', 'ES modules', 'no Node.js dependencies'],
   },
   'nestjs-plugin': {
     description: 'NestJS plugin/module package (TypeScript)',
     template: 'ts-nestjs-plugin',
     buildConfig: 'build.config.nestjs-plugin.js',
+    features: [
+      'NestJS plugin',
+      'TypeScript support',
+      'dependency injection ready',
+      'module decoration',
+    ],
   },
   'js-nestjs-plugin': {
     description: 'NestJS plugin/module package (JavaScript)',
     template: 'js-nestjs-plugin',
     buildConfig: 'build.config.nestjs-plugin.js',
+    features: [
+      'JavaScript NestJS plugin',
+      'dependency injection ready',
+      'module decoration',
+      'flexible APIs',
+    ],
   },
 };
 
