@@ -1,4 +1,7 @@
 import validateNpmPackageName from 'validate-npm-package-name';
+import { execSync } from 'child_process';
+import ora from 'ora';
+import chalk from 'chalk';
 
 export function validatePackageJson(packageJson) {
   const errors = [];
@@ -208,4 +211,265 @@ export function validateMonorepoConfig() {
     errors,
     warnings,
   };
+}
+
+/**
+ * Validate GitHub CLI (gh) availability and basic functionality
+ */
+export function validateGitHubCLI() {
+  const result = {
+    available: false,
+    version: null,
+    authenticated: false,
+    errors: [],
+    setupInstructions: [],
+  };
+
+  try {
+    // Check if GitHub CLI is installed
+    const version = execSync('gh --version', { encoding: 'utf8', stdio: 'pipe' }).trim();
+    result.version = version;
+    result.available = true;
+
+    // Check authentication
+    try {
+      const authStatus = execSync('gh auth status', { encoding: 'utf8', stdio: 'pipe' });
+      result.authenticated = authStatus.includes('Logged in');
+    } catch {
+      result.authenticated = false;
+      result.setupInstructions.push('Run: gh auth login');
+    }
+
+    if (!result.authenticated) {
+      result.errors.push('GitHub CLI is not authenticated');
+    }
+  } catch {
+    result.errors.push('GitHub CLI is not installed');
+    result.setupInstructions.push(
+      'macOS: brew install gh',
+      'Windows: scoop install gh or winget install GitHub.cli',
+      'Linux: See https://github.com/cli/cli#installation',
+      'Or download from: https://github.com/cli/cli/releases',
+    );
+  }
+
+  return result;
+}
+
+/**
+ * Validate pnpm availability and version compatibility
+ */
+export function validatePnpm() {
+  const result = {
+    available: false,
+    version: null,
+    supportedVersion: true,
+    errors: [],
+    setupInstructions: [],
+  };
+
+  try {
+    const version = execSync('pnpm --version', { encoding: 'utf8', stdio: 'pipe' }).trim();
+    result.version = version;
+    result.available = true;
+
+    // Basic version check - pnpm should be at least version 7
+    const versionNum = parseInt(version.split('.')[0]);
+    if (versionNum < 7) {
+      result.supportedVersion = false;
+      result.errors.push(`pnpm version ${version} is not supported. Requires v7.0.0 or higher`);
+      result.setupInstructions.push('Upgrade: npm install -g pnpm@latest');
+    }
+  } catch {
+    result.errors.push('pnpm is not installed');
+    result.setupInstructions.push('npm install -g pnpm', 'Or visit: https://pnpm.io/installation');
+  }
+
+  return result;
+}
+
+/**
+ * Validate git availability and basic configuration
+ */
+export function validateGit() {
+  const result = {
+    available: false,
+    version: null,
+    configured: false,
+    errors: [],
+    setupInstructions: [],
+  };
+
+  try {
+    // Check if git is installed
+    const version = execSync('git --version', { encoding: 'utf8', stdio: 'pipe' }).trim();
+    result.version = version;
+    result.available = true;
+
+    // Check if in a git repository
+    try {
+      execSync('git rev-parse --git-dir', { stdio: 'pipe' });
+
+      // Check git configuration
+      try {
+        const userName = execSync('git config user.name', {
+          encoding: 'utf8',
+          stdio: 'pipe',
+        }).trim();
+        const userEmail = execSync('git config user.email', {
+          encoding: 'utf8',
+          stdio: 'pipe',
+        }).trim();
+
+        if (userName && userEmail) {
+          result.configured = true;
+        } else {
+          result.errors.push('Git is not configured with user name and email');
+          result.setupInstructions.push(
+            'git config --global user.name "Your Name"',
+            'git config --global user.email "your.email@example.com"',
+          );
+        }
+      } catch {
+        result.errors.push('Git configuration is incomplete');
+        result.setupInstructions.push(
+          'git config --global user.name "Your Name"',
+          'git config --global user.email "your.email@example.com"',
+        );
+      }
+    } catch {
+      result.errors.push('Not in a git repository');
+      result.setupInstructions.push('Initialize: git init');
+    }
+  } catch {
+    result.errors.push('git is not installed');
+    result.setupInstructions.push(
+      'macOS: brew install git',
+      'Windows: Download from https://git-scm.com/download/win',
+      'Linux: sudo apt-get install git (Ubuntu/Debian)',
+      'Or visit: https://git-scm.com/downloads',
+    );
+  }
+
+  return result;
+}
+
+/**
+ * Validate all required system dependencies for deployment setup
+ */
+export function validateSystemDependencies() {
+  const spinner = ora('Validating system dependencies...').start();
+
+  const results = {
+    github: validateGitHubCLI(),
+    pnpm: validatePnpm(),
+    git: validateGit(),
+  };
+
+  const allValid =
+    results.github.available &&
+    results.pnpm.available &&
+    results.pnpm.supportedVersion &&
+    results.git.available &&
+    results.git.configured;
+
+  if (allValid) {
+    spinner.succeed('System dependencies validated');
+  } else {
+    spinner.fail('System dependency validation failed');
+  }
+
+  return {
+    valid: allValid,
+    results,
+    summary: {
+      github: results.github.available && results.github.authenticated,
+      pnpm: results.pnpm.available && results.pnpm.supportedVersion,
+      git: results.git.available && results.git.configured,
+    },
+  };
+}
+
+/**
+ * Display validation results with helpful setup instructions
+ */
+export function displayValidationResults(validation) {
+  console.log(chalk.blue.bold('\n🔧 System Dependency Validation:\n'));
+
+  // GitHub CLI
+  if (validation.results.github.available) {
+    if (validation.results.github.authenticated) {
+      console.log(chalk.green('✅ GitHub CLI (gh): Available and authenticated'));
+    } else {
+      console.log(chalk.yellow('⚠️  GitHub CLI (gh): Available but not authenticated'));
+      console.log(chalk.red('   Issue: Not logged in to GitHub'));
+      validation.results.github.setupInstructions.forEach(instruction => {
+        console.log(chalk.cyan(`   Fix: ${instruction}`));
+      });
+    }
+  } else {
+    console.log(chalk.red('❌ GitHub CLI (gh): Not available'));
+    validation.results.github.errors.forEach(error => {
+      console.log(chalk.red(`   Issue: ${error}`));
+    });
+    validation.results.github.setupInstructions.forEach(instruction => {
+      console.log(chalk.cyan(`   Fix: ${instruction}`));
+    });
+  }
+
+  // pnpm
+  if (validation.results.pnpm.available) {
+    if (validation.results.pnpm.supportedVersion) {
+      console.log(chalk.green(`✅ pnpm: Available (${validation.results.pnpm.version})`));
+    } else {
+      console.log(
+        chalk.yellow(
+          `⚠️  pnpm: Available but unsupported version (${validation.results.pnpm.version})`,
+        ),
+      );
+      validation.results.pnpm.errors.forEach(error => {
+        console.log(chalk.red(`   Issue: ${error}`));
+      });
+      validation.results.pnpm.setupInstructions.forEach(instruction => {
+        console.log(chalk.cyan(`   Fix: ${instruction}`));
+      });
+    }
+  } else {
+    console.log(chalk.red('❌ pnpm: Not available'));
+    validation.results.pnpm.errors.forEach(error => {
+      console.log(chalk.red(`   Issue: ${error}`));
+    });
+    validation.results.pnpm.setupInstructions.forEach(instruction => {
+      console.log(chalk.cyan(`   Fix: ${instruction}`));
+    });
+  }
+
+  // git
+  if (validation.results.git.available) {
+    if (validation.results.git.configured) {
+      console.log(
+        chalk.green(`✅ git: Available and configured (${validation.results.git.version})`),
+      );
+    } else {
+      console.log(
+        chalk.yellow(`⚠️  git: Available but not configured (${validation.results.git.version})`),
+      );
+      validation.results.git.errors.forEach(error => {
+        console.log(chalk.red(`   Issue: ${error}`));
+      });
+      validation.results.git.setupInstructions.forEach(instruction => {
+        console.log(chalk.cyan(`   Fix: ${instruction}`));
+      });
+    }
+  } else {
+    console.log(chalk.red('❌ git: Not available'));
+    validation.results.git.errors.forEach(error => {
+      console.log(chalk.red(`   Issue: ${error}`));
+    });
+    validation.results.git.setupInstructions.forEach(instruction => {
+      console.log(chalk.cyan(`   Fix: ${instruction}`));
+    });
+  }
+
+  console.log('');
 }

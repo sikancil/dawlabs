@@ -18,6 +18,7 @@
 
 import { Command } from 'commander';
 import chalk from 'chalk';
+import ora from 'ora';
 
 // Commented but reserved for potential future use with file operations
 // import { fileURLToPath } from 'url';
@@ -32,6 +33,10 @@ import { verifyCicdWorkflow } from './commands/cicd-workflow.js'; // CI/CD pipel
 import { setupRepositoryConfig } from './commands/repository-setup.js'; // Git repository setup
 import { diagnoseSystem } from './commands/diagnostics.js'; // Environment diagnostics
 import { setupAll } from './commands/setup-all.js'; // Complete deployment setup
+
+// Import utilities
+// import { checkNpmPackage } from './utils/npm-api.js';
+import { validateSystemDependencies, displayValidationResults } from './utils/validators.js';
 
 const program = new Command();
 
@@ -52,9 +57,28 @@ program
   .argument('<type>', 'type of setup: npm-publishing, cicd-workflow, repository, all')
   .option('--interactive', 'interactive setup with user-friendly prompts and guidance')
   .option('--auto-verify', 'automatically verify configuration after setup completion')
+  .option(
+    '--package <package>',
+    'target specific package for setup (e.g., @dawlabs/ncurl or ncurl)',
+  )
   .action(async (type, options) => {
     try {
       console.log(chalk.blue.bold(`\n🚀 Setting up ${type}...\n`));
+
+      // Validate system dependencies for setup commands that need them
+      const needsValidation = ['npm-publishing', 'cicd-workflow', 'all'].includes(type);
+      if (needsValidation) {
+        const validation = validateSystemDependencies();
+        if (!validation.valid) {
+          displayValidationResults(validation);
+          console.log(
+            chalk.red(
+              '\n❌ Setup cancelled due to missing dependencies. Please install the required tools and try again.\n',
+            ),
+          );
+          process.exit(1);
+        }
+      }
 
       switch (type) {
         case 'npm-publishing':
@@ -97,6 +121,21 @@ program
   .action(async type => {
     try {
       console.log(chalk.blue.bold(`\n🔍 Verifying ${type}...\n`));
+
+      // Validate system dependencies for verification commands that need them
+      const needsValidation = ['npm-publishing', 'cicd-workflow', 'all'].includes(type);
+      if (needsValidation) {
+        const validation = validateSystemDependencies();
+        if (!validation.valid) {
+          displayValidationResults(validation);
+          console.log(
+            chalk.red(
+              '\n❌ Verification cancelled due to missing dependencies. Please install the required tools and try again.\n',
+            ),
+          );
+          process.exit(1);
+        }
+      }
 
       switch (type) {
         case 'npm-publishing':
@@ -172,8 +211,92 @@ program
 
 // Import helper functions
 async function verifyNpmPublishing() {
-  // Implementation would go here
-  console.log(chalk.yellow('NPM publishing verification not implemented yet'));
+  const spinner = ora('Verifying NPM publishing setup...').start();
+
+  try {
+    // Import necessary functions from npm-publishing module
+    const { findWorkspacePackages, checkGitHubAuth, getRepositoryInfo } = await import(
+      './commands/npm-publishing.js'
+    );
+
+    // Step 1: Check GitHub CLI authentication
+    spinner.text = 'Checking GitHub CLI authentication...';
+    const { authenticated } = checkGitHubAuth();
+
+    if (!authenticated) {
+      spinner.fail('GitHub CLI not authenticated');
+      console.log(chalk.red('❌ Run: gh auth login'));
+      return false;
+    }
+    spinner.succeed('GitHub CLI authenticated');
+
+    // Step 2: Get repository information
+    spinner.text = 'Getting repository information...';
+    const repoInfo = await getRepositoryInfo();
+
+    if (!repoInfo) {
+      spinner.fail('Could not get repository information');
+      console.log(chalk.red('❌ Not in a GitHub repository'));
+      return false;
+    }
+    spinner.succeed(`Repository: ${repoInfo.name}`);
+
+    // Step 3: Scan workspace packages
+    spinner.text = 'Scanning workspace packages...';
+    const packages = await findWorkspacePackages();
+
+    if (packages.length === 0) {
+      spinner.warn('No packages found in workspace');
+      return false;
+    }
+    spinner.succeed(`Found ${packages.length} packages`);
+
+    // Step 4: Check each package's publishing status
+    spinner.text = 'Checking package publishing status...';
+    console.log(chalk.blue('\n📊 Package Publishing Status:\n'));
+
+    let publishedCount = 0;
+    let unpublishedCount = 0;
+    const issues = [];
+
+    for (const pkg of packages) {
+      const status = pkg.published ? '✅ Published' : '❌ Not Published';
+      const version = `${pkg.name}@${pkg.version}`;
+
+      console.log(`${status.padEnd(14)} ${version}`);
+
+      if (pkg.published) {
+        publishedCount++;
+      } else {
+        unpublishedCount++;
+        console.log(chalk.yellow(`   💡 Setup required: npm publish --access public --otp=CODE`));
+
+        // Check if package has proper configuration
+        if (!pkg.packageJson.publishConfig) {
+          issues.push(`${pkg.name}: Missing publishConfig with public access`);
+        }
+      }
+    }
+
+    // Step 5: Display summary
+    console.log(chalk.blue('\n📈 Summary:'));
+    console.log(`  Published: ${chalk.green(publishedCount)} packages`);
+    console.log(`  Unpublished: ${chalk.yellow(unpublishedCount)} packages`);
+
+    if (issues.length > 0) {
+      console.log(chalk.red('\n⚠️  Issues found:'));
+      issues.forEach(issue => console.log(`  • ${issue}`));
+      spinner.warn('NPM publishing verification completed with issues');
+      return false;
+    }
+
+    spinner.succeed('NPM publishing verification completed');
+    return true;
+  } catch (error) {
+    spinner.fail('NPM publishing verification failed');
+    console.error(chalk.red(`Error: ${error.message}`));
+    return false;
+  }
 }
 
 async function verifyAll() {
