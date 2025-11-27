@@ -4,6 +4,13 @@
 
 ### Patch Changes
 
+- Test automated OIDC publishing workflow after confirming v0.0.2 was
+  successfully published via GitHub Actions.
+
+## 0.0.3
+
+### Patch Changes
+
 - Test automated OIDC publishing workflow after trusted publishing setup.
 
 ## 0.0.2
