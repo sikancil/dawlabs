@@ -65,7 +65,7 @@ jobs:
           echo "🤖 Running AI-powered deployment intelligence analysis..."
 
           # Run comprehensive analysis using our multi-oracle system
-          pnpm deployment-setup intelligent-analysis --json --fail-on-conflicts > ai-analysis.json 2>&1
+          node tools/deployment-setup/commands/intelligent-analysis.js --json --fail-on-conflicts > ai-analysis.json 2>&1
           ANALYSIS_EXIT_CODE=$?
 
           if [ $ANALYSIS_EXIT_CODE -eq 0 ]; then
