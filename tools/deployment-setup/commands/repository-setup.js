@@ -93,7 +93,7 @@ async function checkBranchProtection(repoInfo) {
       console.log('   - Check: Test');
       console.log('   - Check: Lint');
     }
-  } catch {
+  } catch (error) {
     console.log(chalk.yellow('\n⚠️  Could not check branch protection rules'));
     console.log('This is optional but recommended for better security');
   }
@@ -112,7 +112,7 @@ async function verifyActionsPermissions() {
       console.log('Trigger a test workflow to verify permissions:');
       console.log('gh workflow run release.yml');
     }
-  } catch {
+  } catch (error) {
     console.log(chalk.yellow('\n⚠️  Could not verify GitHub Actions permissions'));
     console.log('Make sure the workflow file has the correct permissions:');
     console.log('- contents: write');

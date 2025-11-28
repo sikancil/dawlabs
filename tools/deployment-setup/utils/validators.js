@@ -187,7 +187,7 @@ export function validateMonorepoConfig() {
         warnings.push(`Missing recommended script: ${script}`);
       }
     });
-  } catch {
+  } catch (error) {
     errors.push('Could not read root package.json');
   }
 
@@ -235,7 +235,7 @@ export function validateGitHubCLI() {
     try {
       const authStatus = execSync('gh auth status', { encoding: 'utf8', stdio: 'pipe' });
       result.authenticated = authStatus.includes('Logged in');
-    } catch {
+    } catch (error) {
       result.authenticated = false;
       result.setupInstructions.push('Run: gh auth login');
     }
@@ -243,7 +243,7 @@ export function validateGitHubCLI() {
     if (!result.authenticated) {
       result.errors.push('GitHub CLI is not authenticated');
     }
-  } catch {
+  } catch (error) {
     result.errors.push('GitHub CLI is not installed');
     result.setupInstructions.push(
       'macOS: brew install gh',
@@ -280,7 +280,7 @@ export function validatePnpm() {
       result.errors.push(`pnpm version ${version} is not supported. Requires v7.0.0 or higher`);
       result.setupInstructions.push('Upgrade: npm install -g pnpm@latest');
     }
-  } catch {
+  } catch (error) {
     result.errors.push('pnpm is not installed');
     result.setupInstructions.push('npm install -g pnpm', 'Or visit: https://pnpm.io/installation');
   }
@@ -330,18 +330,18 @@ export function validateGit() {
             'git config --global user.email "your.email@example.com"',
           );
         }
-      } catch {
+      } catch (error) {
         result.errors.push('Git configuration is incomplete');
         result.setupInstructions.push(
           'git config --global user.name "Your Name"',
           'git config --global user.email "your.email@example.com"',
         );
       }
-    } catch {
+    } catch (error) {
       result.errors.push('Not in a git repository');
       result.setupInstructions.push('Initialize: git init');
     }
-  } catch {
+  } catch (error) {
     result.errors.push('git is not installed');
     result.setupInstructions.push(
       'macOS: brew install git',

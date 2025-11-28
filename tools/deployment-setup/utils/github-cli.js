@@ -18,7 +18,7 @@ export async function getRepositoryInfo() {
       silent: false,
     });
     return JSON.parse(repoData);
-  } catch {
+  } catch (error) {
     throw new Error(
       'Could not get repository information. ' +
         'Make sure you are in a GitHub repository with gh CLI installed.',
@@ -30,7 +30,7 @@ export function checkWorkflowExists(workflowPath = '.github/workflows/release.ym
   try {
     runGhCommand(`workflow view ${workflowPath}`);
     return true;
-  } catch {
+  } catch (error) {
     return false;
   }
 }
@@ -42,7 +42,7 @@ export function getWorkflowStatus(workflowName = 'Release') {
     );
     const runs = JSON.parse(statusData);
     return runs[0] || null;
-  } catch {
+  } catch (error) {
     return null;
   }
 }
@@ -60,7 +60,7 @@ export function getRepositoryEnvironments() {
   try {
     const envData = runGhCommand('api repos/:owner/:repo/environments');
     return JSON.parse(envData).environments || [];
-  } catch {
+  } catch (error) {
     return [];
   }
 }
@@ -74,7 +74,7 @@ export function checkEnvironmentProtection(environmentName = 'production') {
       exists: !!env,
       protectionRules: env?.protection_rules || [],
     };
-  } catch {
+  } catch (error) {
     return { exists: false, protectionRules: [] };
   }
 }

@@ -43,7 +43,7 @@ async function diagnoseRepository(spinner) {
   try {
     execSync('git rev-parse --git-dir', { stdio: 'ignore' });
     console.log(chalk.green('✅ Git repository detected'));
-  } catch {
+  } catch (error) {
     console.log(chalk.red('❌ Not a git repository'));
     spinner.fail('Repository diagnosis failed');
     return;
@@ -54,7 +54,7 @@ async function diagnoseRepository(spinner) {
   try {
     execSync('gh --version', { stdio: 'ignore' });
     console.log(chalk.green('✅ GitHub CLI installed'));
-  } catch {
+  } catch (error) {
     console.log(chalk.red('❌ GitHub CLI not installed'));
     console.log(chalk.yellow('Install GitHub CLI: https://cli.github.com/'));
     return;
@@ -71,7 +71,7 @@ async function diagnoseRepository(spinner) {
       console.log(chalk.yellow('Run: gh auth login'));
       return;
     }
-  } catch {
+  } catch (error) {
     console.log(chalk.red('❌ GitHub CLI authentication failed'));
     return;
   }
@@ -83,7 +83,7 @@ async function diagnoseRepository(spinner) {
     console.log(chalk.green(`✅ Repository: ${repoInfo.owner.login}/${repoInfo.name}`));
     console.log(`   Main branch: ${repoInfo.defaultBranchRef.name}`);
     console.log(`   Private: ${repoInfo.isPrivate ? 'Yes' : 'No'}`);
-  } catch {
+  } catch (error) {
     console.log(chalk.red('❌ Could not get repository information'));
     console.log(chalk.yellow("Make sure you're in a GitHub repository"));
     return;
@@ -100,7 +100,7 @@ async function diagnosePublishing(spinner) {
   try {
     const whoami = execSync('npm whoami', { encoding: 'utf8', stdio: 'pipe' });
     console.log(chalk.green(`✅ NPM authenticated as: ${whoami.trim()}`));
-  } catch {
+  } catch (error) {
     console.log(chalk.red('❌ Not authenticated with NPM'));
     console.log(chalk.yellow('Run: npm login'));
     return;
@@ -117,7 +117,7 @@ async function diagnosePublishing(spinner) {
     } else {
       console.log(chalk.yellow('⚠️  NPM provenance not enabled'));
     }
-  } catch {
+  } catch (error) {
     console.log(chalk.yellow('⚠️  Could not check NPM configuration'));
   }
 
@@ -134,7 +134,7 @@ async function diagnosePublishing(spinner) {
         console.log(`   ${status} ${pkg.name}@${pkg.version}`);
       }
     }
-  } catch {
+  } catch (error) {
     console.log(chalk.red('❌ Could not scan workspace packages'));
   }
 
@@ -274,7 +274,7 @@ async function checkPackageConfigurations() {
         }
       }
     }
-  } catch {
+  } catch (error) {
     console.log(chalk.red('❌ Could not check package configurations'));
   }
 }
@@ -311,7 +311,7 @@ async function getWorkspacePackages() {
   try {
     const output = execSync('pnpm ls --recursive --depth=0 --json', { encoding: 'utf8' });
     return JSON.parse(output);
-  } catch {
+  } catch (error) {
     return [];
   }
 }

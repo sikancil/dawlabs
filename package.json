@@ -29,7 +29,7 @@
     "deployment-setup": "node tools/deployment-setup/index.js",
     "changeset": "changeset",
     "version-packages": "pnpm changeset version",
-    "release": "turbo run build && turbo run build:nest && pnpm publish -r",
+    "release": "turbo run build && turbo run build:nest && changeset publish",
     "clean": "turbo run clean && rm -rf node_modules",
     "clean:all": "rm -rf node_modules .turbo && find . -name node_modules -type d -exec rm -rf {} +",
     "postinstall": "husky install || true",

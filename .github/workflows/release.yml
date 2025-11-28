@@ -6,21 +6,28 @@ on:
       - main
   workflow_dispatch:
 
+# NestJS-style concurrency control to prevent race conditions
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
 permissions:
-  contents: write
-  pull-requests: write
-  id-token: write # REQUIRED for OIDC authentication
+  contents: write # to create release (changesets/action)
+  issues: write # to post issue comments (changesets/action)
+  pull-requests: write # to create pull request (changesets/action)
+  id-token: write # to use OpenID Connect token for provenance (changesets/action)
 
 jobs:
   release:
     name: Release
+    if: github.repository == 'arifwidianto/arifwidianto' # Only run on main repo, not forks
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: production # Matches npm trusted publishing setting
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,17 +41,14 @@ jobs:
           version: 9.0.0
 
       - name: Get pnpm store directory
-        id: pnpm-cache
         shell: bash
         run: |
-          STORE_PATH=$(pnpm store path --silent)
-          echo "STORE_PATH=$STORE_PATH" >> $GITHUB_ENV
-          echo "path=$STORE_PATH" >> $GITHUB_OUTPUT
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
-          path: ${{ steps.pnpm-cache.outputs.path }}
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -59,26 +63,18 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          # Use pnpm-specific commands for workspace compatibility
+          # NestJS-style: Use pnpm changeset version and custom release script
           version: pnpm changeset version
-          # Use recursive publishing for all workspace packages with proper error handling
-          publish: pnpm publish -r --no-git-checks
-          commit: "chore: version packages"
-          title: "chore: version packages"
-          createGithubReleases: true
+          publish: pnpm release
+          title: "chore: release packages"
+          commit: "chore: release packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
-          # No NPM_TOKEN or NODE_AUTH_TOKEN needed - OIDC handles authentication
+          NPM_CONFIG_PROVENANCE: true # Enables OIDC provenance
+          # No NPM_TOKEN needed - OIDC handles authentication
 
       - name: Verify Publishing Success
         if: always() && steps.changesets.outputs.published == 'true'
         run: |
           echo "✅ Changeset publishing completed successfully!"
           echo "Published packages: ${{ steps.changesets.outputs.publishedPackages }}"
-
-      - name: Handle Publishing Failure
-        if: failure()
-        run: |
-          echo "⚠️ Workflow failed, but checking if packages were actually published..."
-          # This step helps distinguish between actual failures and post-publish cleanup issues

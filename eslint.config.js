@@ -20,6 +20,19 @@ export default [
   // Base configuration includes JavaScript and TypeScript rules
   ...baseConfig,
 
+  // Override rules for deployment tools (allow console statements for CLI functionality)
+  {
+    files: ['tools/deployment-setup/**/*.{js,ts}'],
+    rules: {
+      'no-console': 'off', // CLI tools need console output
+      'no-unused-vars': ['warn', {
+        'argsIgnorePattern': '^_',
+        'varsIgnorePattern': '^_',
+        'caughtErrorsIgnorePattern': '^_'
+      }], // Allow unused variables/parameters with underscore prefix
+    },
+  },
+
   // TypeScript config is included in the base configuration
   // NestJS-specific configurations should be applied at the package level
 
