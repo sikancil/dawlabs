@@ -95,9 +95,10 @@ function inferHeaders(options = {}) {
     }
   }
 
-  // LLM Pattern: User-Agent assumption
+  // LLM Pattern: User-Agent assumption with dynamic version
   if (!headers['user-agent']) {
-    headers['user-agent'] = 'ncurl/1.0.0';
+    const packageVersion = '0.0.1'; // Will be updated during build
+    headers['user-agent'] = `ncurl/${packageVersion}`;
   }
 
   return headers;

@@ -1,5 +1,23 @@
 # @dawlabs/ncurl
 
+## 0.1.0
+
+### Minor Changes
+
+- feat: add api-info command and improve package structure
+  - Add new `api-info` command that displays comprehensive API interaction
+    guidance for LLMs
+  - Improve User-Agent header with dynamic version string (0.0.1)
+  - Add detailed usage examples and common patterns for LLM consumption
+  - Enhance CLI documentation with smart feature explanations
+  - Fix hardcoded version references in user agent string
+
+  This update improves the developer experience for LLM users by providing:
+  - Comprehensive API usage examples
+  - Smart method detection patterns
+  - Clear explanations of automatic features
+  - Better error handling guidance
+
 ## 0.0.5
 
 ### Patch Changes

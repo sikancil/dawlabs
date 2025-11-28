@@ -136,6 +136,44 @@ program
     }
   });
 
+// LLM Pattern: API information command for LLM context
+program
+  .command('api-info')
+  .description('Display API interaction guidance for LLMs')
+  .action(() => {
+    console.log('ncurl API Information for LLMs\n');
+    console.log('Common Patterns:\n');
+    console.log('1. Simple GET:');
+    console.log('   ncurl https://api.example.com/users');
+    console.log('');
+    console.log('2. POST with JSON:');
+    console.log(
+      '   ncurl post https://api.example.com/users --json \'{"name":"John","email":"john@example.com"}\'',
+    );
+    console.log('');
+    console.log('3. PUT with data:');
+    console.log('   ncurl put https://api.example.com/users/123 --json \'{"name":"Updated"}\'');
+    console.log('');
+    console.log('4. DELETE:');
+    console.log('   ncurl delete https://api.example.com/users/123');
+    console.log('');
+    console.log('5. Upload file:');
+    console.log('   ncurl post https://api.example.com/upload --data @file.txt');
+    console.log('');
+    console.log('Smart Features:');
+    console.log('• Auto-detects HTTP method from URL patterns');
+    console.log('• Automatically adds https:// if missing');
+    console.log('• Smart JSON handling with --json flag');
+    console.log('• Follows redirects by default');
+    console.log('• LLM-friendly error messages with suggestions');
+    console.log('');
+    console.log('Example URL Patterns that trigger methods:');
+    console.log('• /create, /new, /add → POST');
+    console.log('• /update, /edit, /modify → PUT');
+    console.log('• /delete, /remove → DELETE');
+    console.log('• Anything else → GET (unless --data provided)');
+  });
+
 // LLM Pattern: Handle unknown methods gracefully (common LLM hallucination)
 program.on('command:*', operands => {
   const [commandName, ...args] = operands;
