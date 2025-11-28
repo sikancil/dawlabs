@@ -38,7 +38,7 @@
   "keywords": [
     "monorepo",
     "dawlabs",
-    "arifwidianto",
+    "sikancil",
     "tools",
     "cli",
     "utilities",
@@ -59,6 +59,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.2",
     "@changesets/cli": "^2.29.7",
     "@eslint/js": "^9.39.1",
     "@types/commander": "^2.12.5",

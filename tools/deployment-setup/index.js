@@ -33,6 +33,7 @@ import { verifyCicdWorkflow } from './commands/cicd-workflow.js'; // CI/CD pipel
 import { setupRepositoryConfig } from './commands/repository-setup.js'; // Git repository setup
 import { diagnoseSystem } from './commands/diagnostics.js'; // Environment diagnostics
 import { setupAll } from './commands/setup-all.js'; // Complete deployment setup
+import { runIntelligentAnalysis } from './commands/intelligent-analysis.js'; // AI intelligence analysis
 
 // Import utilities
 // import { checkNpmPackage } from './utils/npm-api.js';
@@ -179,6 +180,47 @@ program
       await diagnoseSystem(scope, options);
     } catch (error) {
       console.error(chalk.red(`\n❌ Diagnosis failed: ${error.message}\n`));
+      if (program.opts().verbose) {
+        console.error(error.stack);
+      }
+      process.exit(1);
+    }
+  });
+
+// AI Intelligence Analysis commands
+program
+  .command('intelligent-analysis')
+  .description('Run AI-powered deployment intelligence analysis')
+  .option('--json', 'output results in JSON format for CI/CD integration')
+  .option('--package <package>', 'analyze specific package only')
+  .option('--fail-on-conflicts', 'fail if conflicts are detected')
+  .option('--confidence-threshold <number>', 'minimum confidence threshold (0.0-1.0)', '0.7')
+  .action(async options => {
+    try {
+      console.log(chalk.blue.bold('\n🤖 Running AI Intelligence Analysis...\n'));
+
+      // Import the intelligent analysis command module and execute it directly
+      const { main } = await import('./commands/intelligent-analysis.js');
+
+      // Set up command line arguments for the intelligent-analysis module
+      const originalArgv = process.argv;
+      const args = ['intelligent-analysis'];
+
+      if (options.json) args.push('--json');
+      if (options.package) args.push('--package', options.package);
+      if (options.failOnConflicts) args.push('--fail-on-conflicts');
+      if (options.confidenceThreshold)
+        args.push('--confidence-threshold', options.confidenceThreshold.toString());
+
+      // Temporarily replace process.argv for the command
+      process.argv = ['node', 'intelligent-analysis', ...args];
+
+      await main();
+
+      // Restore original process.argv
+      process.argv = originalArgv;
+    } catch (error) {
+      console.error(chalk.red(`\n❌ AI Intelligence Analysis failed: ${error.message}\n`));
       if (program.opts().verbose) {
         console.error(error.stack);
       }

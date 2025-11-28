@@ -18,7 +18,7 @@ permissions:
 jobs:
   release:
     name: Release
-    if: github.repository == 'arifwidianto/arifwidianto' # Only run on main repo, not forks
+    if: github.repository == 'sikancil/dawlabs' # Only run on main repo, not forks
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production # Matches npm trusted publishing setting
@@ -58,6 +58,51 @@ jobs:
 
       - name: Build All Packages
         run: pnpm build
+
+      - name: AI Intelligence Analysis
+        id: ai-intelligence
+        run: |
+          echo "🤖 Running AI-powered deployment intelligence analysis..."
+
+          # Run comprehensive analysis using our multi-oracle system
+          pnpm deployment-setup intelligent-analysis --json --fail-on-conflicts > ai-analysis.json 2>&1
+          ANALYSIS_EXIT_CODE=$?
+
+          if [ $ANALYSIS_EXIT_CODE -eq 0 ]; then
+            echo "✅ AI Intelligence Analysis: PASSED"
+
+            # Parse and display results
+            if [ -f ai-analysis.json ]; then
+              echo "📊 Analysis Summary:"
+              cat ai-analysis.json | jq -r '.[] | "• \(.packageName)@\(.localVersion): \(.analysis.state) (\(.consensusScore | round(2) * 100)% confidence)"' 2>/dev/null || echo "Analysis completed"
+
+              # Export results for subsequent steps
+              echo "ai-analysis-passed=true" >> $GITHUB_OUTPUT
+              echo "ai-analysis-result=$(cat ai-analysis.json)" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️ AI Intelligence Analysis: No results generated"
+              echo "ai-analysis-passed=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "❌ AI Intelligence Analysis: FAILED"
+            if [ -f ai-analysis.json ]; then
+              echo "🔍 Error Details:"
+              cat ai-analysis.json
+            fi
+            echo "ai-analysis-passed=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Display Intelligence Summary
+        if: steps.ai-intelligence.outputs.ai-analysis-passed == 'true'
+        run: |
+          echo "📊 AI Intelligence Summary:"
+          echo "=========================="
+          if [ -f ai-analysis.json ]; then
+            echo "Packages analyzed: $(cat ai-analysis.json | jq 'length' 2>/dev/null || echo 'unknown')"
+            echo "All systems: ✅ PASSED ✅"
+            rm ai-analysis.json
+          fi
 
       - name: Create Release Pull Request or Publish
         id: changesets
