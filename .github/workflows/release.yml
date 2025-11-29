@@ -50,14 +50,38 @@ jobs:
       - name: Oracle Intelligence Analysis
         id: intelligence
         run: |
-          node tools/internal-cli/index.js intelligent-analysis --json > oracle-intelligence-analysis.json 2>&1 || echo "Analysis completed with conflicts (expected for published packages)"
+          echo "🧠 Running Oracle Intelligence Analysis..."
+          # Run analysis and capture the JSON output for summary display
+          OUTPUT=$(node tools/internal-cli/index.js intelligent-analysis --json 2>/dev/null)
+          echo "$OUTPUT" | tail -1 > oracle-intelligence-analysis.json
 
-      # Display Oracle Intelligence analysis results
-      - name: Display Oracle Intelligence Analysis
-        if: always()
-        run: |
-          echo "🧠 Oracle Intelligence Analysis Results:"
-          cat oracle-intelligence-analysis.json
+          # Display clean summary
+          echo ""
+          echo "📦 Oracle Intelligence Analysis Summary:"
+          if [ -s oracle-intelligence-analysis.json ]; then
+            node -e "
+              try {
+                const analysis = JSON.parse(require('fs').readFileSync('oracle-intelligence-analysis.json', 'utf8'));
+                analysis.forEach(pkg => {
+                  const status = pkg.analysis.state === 'version-violation' ? '⚠️' : '✅';
+                  const confidence = Math.round(pkg.analysis.confidence * 100);
+                  const conflicts = pkg.analysis.conflicts.length;
+                  console.log('  ' + status + ' ' + pkg.packageName + '@v' + pkg.localVersion + ' (' + confidence + '% confidence)');
+                  if (conflicts > 0) {
+                    console.log('     → ' + conflicts + ' conflict(s) detected');
+                  }
+                });
+
+                const totalPkgs = analysis.length;
+                const conflictPkgs = analysis.filter(p => p.analysis.conflicts.length > 0).length;
+                console.log('\\\\n📊 Summary: ' + (totalPkgs - conflictPkgs) + '/' + totalPkgs + ' packages ready for publishing');
+              } catch (e) {
+                console.log('❌ Could not parse analysis results');
+              }
+            "
+          else
+            echo "⚠️  Analysis completed but no JSON data captured"
+          fi
 
       # Create Release Pull Request or Publish
       - name: Create Release Pull Request or Publish
