@@ -1,0 +1,96 @@
+{
+  "_comment": {
+    "purpose": "Example centralized monorepo configuration template",
+    "version": "0.0.1",
+    "description": "This is a template configuration file. Copy to .identity.dawlabs.json and customize for your monorepo.",
+    "managedBy": "dawlabs-internal-cli"
+  },
+  "monorepo": {
+    "name": "example-monorepo",
+    "type": "node",
+    "version": "0.0.1",
+    "description": "Example monorepo for demonstration purposes",
+    "structure": {
+      "packages": "packages/*",
+      "tools": "tools/*",
+      "apps": "apps/*"
+    },
+    "discoveredPackages": [
+      {
+        "name": "@exampleorg/shared-types",
+        "path": "packages/shared-types",
+        "type": "library",
+        "version": "0.0.1"
+      },
+      {
+        "name": "@exampleorg/example-cli",
+        "path": "packages/example-cli",
+        "type": "cli",
+        "version": "0.0.1"
+      },
+      {
+        "name": "@exampleorg/create-tool",
+        "path": "tools/create-tool",
+        "type": "tool",
+        "version": "0.0.1"
+      }
+    ],
+    "npm": {
+      "client": "pnpm",
+      "useWorkspaces": true,
+      "private": true,
+      "publishConfig": {
+        "access": "public"
+      },
+      "registry": "https://registry.npmjs.org/",
+      "organization": "@exampleorg"
+    },
+    "build": {
+      "orchestration": "turbo",
+      "packageManager": "pnpm",
+      "nodeVersion": "20"
+    },
+    "versioning": {
+      "strategy": "changesets",
+      "independent": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "private": true,
+    "url": "git+https://github.com/<username|organisation>/example-monorepo.git",
+    "defaultBranch": "main"
+  },
+  "organization": {
+    "name": "Example Organization",
+    "npm": "@exampleorg",
+    "github": "<username|organisation>",
+    "license": "MIT"
+  },
+  "ci_cd": {
+    "platform": "github",
+    "environment": "production",
+    "trustedPublishing": true,
+    "provenance": true
+  },
+  "bugs": {
+    "url": "https://github.com/<username|organisation>/example-monorepo/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Jane Doe",
+    "email": "jane.doe@example.com",
+    "url": "https://github.com/<username|organisation>"
+  },
+  "tools": {
+    "internal_cli": {
+      "name": "@exampleorg/internal-cli",
+      "binary": "example-cli",
+      "configPath": "tools/internal-cli/config"
+    },
+    "create_package": {
+      "name": "@exampleorg/create-package",
+      "binary": "create-example-package"
+    }
+  }
+}

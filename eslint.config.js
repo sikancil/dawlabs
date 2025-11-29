@@ -20,16 +20,19 @@ export default [
   // Base configuration includes JavaScript and TypeScript rules
   ...baseConfig,
 
-  // Override rules for deployment tools (allow console statements for CLI functionality)
+  // Override rules for internal CLI tools (allow console statements for CLI functionality)
   {
-    files: ['tools/deployment-setup/**/*.{js,ts}'],
+    files: ['tools/internal-cli/**/*.{js,ts}'],
     rules: {
       'no-console': 'off', // CLI tools need console output
-      'no-unused-vars': ['warn', {
-        'argsIgnorePattern': '^_',
-        'varsIgnorePattern': '^_',
-        'caughtErrorsIgnorePattern': '^_'
-      }], // Allow unused variables/parameters with underscore prefix
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ], // Allow unused variables/parameters with underscore prefix
     },
   },
 

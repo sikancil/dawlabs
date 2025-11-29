@@ -1,0 +1,104 @@
+{
+  "_comment": {
+    "purpose": "Example deployment-specific configuration complementing identity.dawlabs.json",
+    "version": "0.0.1",
+    "description": "This is a template deployment configuration file. Copy to deployment.json and customize for your deployment workflow.",
+    "derivedFrom": ".identity.dawlabs.json"
+  },
+  "deployment": {
+    "defaults": {
+      "environment": "production",
+      "workflowName": "Release",
+      "workflowFile": ".github/workflows/release.yml"
+    },
+    "github": {
+      "requiredEnvironments": ["production"],
+      "workflowTriggers": {
+        "on": {
+          "push": ["main"],
+          "pull_request": ["main"],
+          "workflow_dispatch": {}
+        }
+      },
+      "permissions": {
+        "contents": "write",
+        "pull-requests": "write",
+        "id-token": "write"
+      },
+      "actions": {
+        "required": [
+          "actions/checkout@v4",
+          "actions/setup-node@v4",
+          "pnpm/action-setup@v4",
+          "actions/cache@v4",
+          "changesets/action@v1"
+        ],
+        "requiredJobs": ["release", "test"]
+      }
+    },
+    "npm": {
+      "trustedPublishing": {
+        "enabled": true,
+        "requiredPermissions": ["contents: write", "pull-requests: write", "id-token: write"]
+      },
+      "packageValidation": {
+        "required": ["name", "version", "description"],
+        "recommended": ["repository", "author", "license", "keywords", "engines"],
+        "scopedPackages": {
+          "requirePublishConfig": true,
+          "defaultAccess": "public"
+        }
+      }
+    },
+    "publishing": {
+      "strategy": "changesets",
+      "independent": true,
+      "provenance": true,
+      "access": "public"
+    },
+    "qualityGates": {
+      "prePublish": ["typeCheck", "lintCheck", "buildCheck", "testCheck"],
+      "postPublish": ["registryVerification", "packageInstallation"]
+    }
+  },
+  "templates": {
+    "workflowPath": ".github/workflows/release.yml",
+    "packageTypes": {
+      "cli": "tools/*",
+      "library": "packages/*",
+      "tool": "tools/*",
+      "app": "apps/*"
+    }
+  },
+  "diagnostics": {
+    "checks": [
+      "gitRepository",
+      "githubAuth",
+      "npmAuth",
+      "workflowFile",
+      "workspaceConfig",
+      "packageConfigs",
+      "environmentSetup",
+      "changesetConfig",
+      "oracleIntelligence"
+    ],
+    "severity": {
+      "critical": ["workflowFile", "githubAuth", "npmAuth", "identityConfig"],
+      "warning": ["packageConfigs", "workspaceConfig", "changesetConfig"],
+      "info": ["gitRepository", "environmentSetup", "oracleIntelligence"]
+    }
+  },
+  "oracleIntelligence": {
+    "enabled": true,
+    "oracles": [
+      "npmRegistry",
+      "gitHistory",
+      "buildArtifact",
+      "localState",
+      "networkCache",
+      "semanticVersion"
+    ],
+    "confidenceThreshold": 0.8,
+    "riskAssessment": true
+  }
+}

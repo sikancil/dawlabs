@@ -1,0 +1,106 @@
+{
+  "_comment": {
+    "purpose": "Centralized DAWLabs monorepo configuration",
+    "version": "0.0.1",
+    "description": "This is the central configuration hub for the DAWLabs monorepo. All tools and packages should reference this configuration for consistency.",
+    "managedBy": "dawlabs-internal-cli"
+  },
+  "monorepo": {
+    "name": "dawlabs",
+    "type": "node",
+    "version": "0.0.1",
+    "description": "Monorepo for DAWLabs packages and internal tools",
+    "structure": {
+      "packages": "packages/*",
+      "tools": "tools/*",
+      "apps": "apps/*"
+    },
+    "discoveredPackages": [
+      {
+        "name": "@dawlabs/create-package",
+        "path": "tools/create-dawlabs-package",
+        "type": "cli",
+        "version": "0.0.2",
+        "private": false
+      },
+      {
+        "name": "@dawlabs/internal-cli",
+        "path": "tools/internal-cli",
+        "type": "cli",
+        "version": "0.0.1",
+        "private": true
+      },
+      {
+        "name": "@dawlabs/ncurl",
+        "path": "packages/ncurl",
+        "type": "cli",
+        "version": "0.0.3",
+        "private": false
+      },
+      {
+        "name": "@dawlabs/shared-types",
+        "path": "packages/shared-types",
+        "type": "library",
+        "version": "0.0.1",
+        "private": false
+      }
+    ],
+    "npm": {
+      "client": "pnpm",
+      "useWorkspaces": true,
+      "private": true,
+      "publishConfig": {
+        "access": "public"
+      },
+      "registry": "https://registry.npmjs.org/",
+      "organization": "@dawlabs"
+    },
+    "build": {
+      "orchestration": "turbo",
+      "packageManager": "pnpm",
+      "nodeVersion": "20"
+    },
+    "versioning": {
+      "strategy": "changesets",
+      "independent": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "private": true,
+    "url": "git+https://github.com/sikancil/dawlabs.git",
+    "defaultBranch": "main"
+  },
+  "organization": {
+    "name": "DAWLabs",
+    "npm": "@dawlabs",
+    "github": "sikancil",
+    "license": "MIT"
+  },
+  "ci_cd": {
+    "platform": "github",
+    "environment": "production",
+    "trustedPublishing": true,
+    "provenance": true
+  },
+  "bugs": {
+    "url": "https://github.com/sikancil/dawlabs/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Arif Widianto",
+    "email": "dimas.arif.widianto@gmail.com",
+    "url": "https://github.com/sikancil"
+  },
+  "tools": {
+    "internal_cli": {
+      "name": "@dawlabs/internal-cli",
+      "binary": "dawlabs-cli",
+      "configPath": "tools/internal-cli/config"
+    },
+    "create_package": {
+      "name": "@dawlabs/create-package",
+      "binary": "create-dawlabs-package"
+    }
+  }
+}

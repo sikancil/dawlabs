@@ -1,0 +1,62 @@
+{
+  "name": "@dawlabs/internal-cli",
+  "version": "0.0.1",
+  "description": "Internal CLI tool for DAWLabs package management, verification, and deployment workflows",
+  "main": "index.js",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "dawlabs-cli": "./index.js",
+    "cli": "./index.js"
+  },
+  "scripts": {
+    "build": "tsup index.js --target node18 --format esm --out-dir dist",
+    "dev": "node index.js",
+    "check-types": "tsc --noEmit",
+    "test": "node --test",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix"
+  },
+  "keywords": [
+    "dawlabs",
+    "cli",
+    "internal",
+    "package-management",
+    "verification",
+    "deployment",
+    "ci-cd",
+    "automation",
+    "github-actions",
+    "npm-publishing"
+  ],
+  "files": [
+    "dist/**/*",
+    "commands/**/*",
+    "utils/**/*",
+    "templates/**/*",
+    "config/**/*",
+    "README.md"
+  ],
+  "author": "Arif Widianto <https://github.com/sikancil>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.12",
+    "ora": "^7.0.1",
+    "validate-npm-package-name": "^5.0.0",
+    "open": "^8.4.0",
+    "clipboardy": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/inquirer": "^9.0.7",
+    "@types/validate-npm-package-name": "^4.0.2",
+    "eslint": "^9.39.1",
+    "tsup": "^8.5.1",
+    "typescript": "5.9.2"
+  }
+}

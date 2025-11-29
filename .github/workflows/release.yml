@@ -1,125 +1,122 @@
 name: Release
 
+# Configure workflow permissions for security and access control
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write # Required for OIDC authentication
+
+# Environment configuration for secure publishing
+environments:
+  production:
+    url: https://www.npmjs.com/package/@dawlabs/*
+
+# Control when workflow runs
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: ["main"]
+  pull_request:
+    branches: [main]
 
-# NestJS-style concurrency control to prevent race conditions
-concurrency: ${{ github.workflow }}-${{ github.ref }}
-
-permissions:
-  contents: write # to create release (changesets/action)
-  issues: write # to post issue comments (changesets/action)
-  pull-requests: write # to create pull request (changesets/action)
-  id-token: write # to use OpenID Connect token for provenance (changesets/action)
+# Prevent duplicate workflow runs
+concurrency:
+  group: "release"
+  cancel-in-progress: false
 
 jobs:
+  # Job for releasing packages
   release:
-    name: Release
-    if: github.repository == 'sikancil/dawlabs' # Only run on main repo, not forks
+    name: Release Packages
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment: production # Matches npm trusted publishing setting
+    environment: production
+
     steps:
-      - name: Checkout Repository
+      # Checkout repository code
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Setup Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: "https://registry.npmjs.org" # OIDC authentication
+          registry-url: "https://registry.npmjs.org/"
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.0.0
-
-      - name: Get pnpm store directory
-        shell: bash
+      # Install dependencies
+      - name: Install dependencies
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          npm install -g pnpm
+          pnpm install --frozen-lockfile
 
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build All Packages
-        run: pnpm build
-
-      - name: AI Intelligence Analysis
-        id: ai-intelligence
+      # Run Oracle Intelligence deployment analysis
+      - name: Oracle Intelligence Analysis
+        id: intelligence
         run: |
-          echo "🤖 Running AI-powered deployment intelligence analysis..."
+          node tools/internal-cli/commands/intelligent-analysis.js --json --fail-on-conflicts > oracle-intelligence-analysis.json 2>&1
 
-          # Run comprehensive analysis using our multi-oracle system
-          node tools/deployment-setup/commands/intelligent-analysis.js --json --fail-on-conflicts > ai-analysis.json 2>&1
-          ANALYSIS_EXIT_CODE=$?
-
-          if [ $ANALYSIS_EXIT_CODE -eq 0 ]; then
-            echo "✅ AI Intelligence Analysis: PASSED"
-
-            # Parse and display results
-            if [ -f ai-analysis.json ]; then
-              echo "📊 Analysis Summary:"
-              cat ai-analysis.json | jq -r '.[] | "• \(.packageName)@\(.localVersion): \(.analysis.state) (\(.consensusScore | round(2) * 100)% confidence)"' 2>/dev/null || echo "Analysis completed"
-
-              # Export results for subsequent steps
-              echo "ai-analysis-passed=true" >> $GITHUB_OUTPUT
-              echo "ai-analysis-result=$(cat ai-analysis.json)" >> $GITHUB_OUTPUT
-            else
-              echo "⚠️ AI Intelligence Analysis: No results generated"
-              echo "ai-analysis-passed=true" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "❌ AI Intelligence Analysis: FAILED"
-            if [ -f ai-analysis.json ]; then
-              echo "🔍 Error Details:"
-              cat ai-analysis.json
-            fi
-            echo "ai-analysis-passed=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-
-      - name: Display Intelligence Summary
-        if: steps.ai-intelligence.outputs.ai-analysis-passed == 'true'
+      # Display Oracle Intelligence analysis results
+      - name: Display Oracle Intelligence Analysis
+        if: always()
         run: |
-          echo "📊 AI Intelligence Summary:"
-          echo "=========================="
-          if [ -f ai-analysis.json ]; then
-            echo "Packages analyzed: $(cat ai-analysis.json | jq 'length' 2>/dev/null || echo 'unknown')"
-            echo "All systems: ✅ PASSED ✅"
-            rm ai-analysis.json
-          fi
+          echo "🧠 Oracle Intelligence Analysis Results:"
+          cat oracle-intelligence-analysis.json
 
+      # Create Release Pull Request or Publish
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
         with:
-          # NestJS-style: Use pnpm changeset version and custom release script
-          version: pnpm changeset version
-          publish: pnpm release
-          title: "chore: release packages"
-          commit: "chore: release packages"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true # Enables OIDC provenance
-          # No NPM_TOKEN needed - OIDC handles authentication
+          publish: pnpm changeset publish
+          commit: "chore: update packages"
+          title: "chore: update packages"
 
-      - name: Verify Publishing Success
-        if: always() && steps.changesets.outputs.published == 'true'
+      # Display release results
+      - name: Release Results
+        if: steps.changesets.outputs.published == 'true'
         run: |
-          echo "✅ Changeset publishing completed successfully!"
-          echo "Published packages: ${{ steps.changesets.outputs.publishedPackages }}"
+          echo "🎉 Packages published successfully!"
+          echo "Published packages:"
+          echo "${{ steps.changesets.outputs.publishedPackages }}"
+
+  # Job for running tests and validation
+  test:
+    name: Test and Validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      # Checkout repository code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          npm install -g pnpm
+          pnpm install --frozen-lockfile
+
+      # Run tests
+      - name: Run tests
+        run: pnpm test
+
+      # Run linting
+      - name: Run linting
+        run: pnpm lint
+
+      # Build packages
+      - name: Build packages
+        run: pnpm build
+
+      # Validate package configurations
+      - name: Validate packages
+        run: |
+          node tools/internal-cli/index.js verify package-config --json

@@ -7,10 +7,14 @@ node_modules
 
 # Local env files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
+.env.*
+!.env-example
+!.env.example
+
+# Repo identity variables file
+!.identity.example.json
+!tools/internal-cli/config/deployment.example.json
 
 # Testing
 coverage
@@ -39,6 +43,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+/CLA*md
 .ser*na/
 .kil*de/
 .cla*de
