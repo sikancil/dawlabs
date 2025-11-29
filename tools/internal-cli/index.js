@@ -239,7 +239,8 @@ program
   .command('intelligent-analysis')
   .alias('ai')
   .description('Run Oracle Intelligence deployment analysis')
-  .option('--json', 'output results in JSON format for CI/CD integration')
+  .option('--json', 'output results in JSON format for machine processing')
+  .option('--ci-format', 'output clean, formatted summary for CI/CD pipelines')
   .option('--package <package>', 'analyze specific package only')
   .option('--fail-on-conflicts', 'fail if conflicts are detected')
   .option('--confidence-threshold <number>', 'minimum confidence threshold (0.0-1.0)', '0.7')
@@ -252,6 +253,7 @@ program
 
       const args = [];
       if (options.json) args.push('--json');
+      if (options.ciFormat) args.push('--ci-format');
       if (options.package) args.push('--package', options.package);
       if (options.failOnConflicts) args.push('--fail-on-conflicts');
       if (options.confidenceThreshold)
@@ -263,9 +265,19 @@ program
         const result = execSync(command, {
           encoding: 'utf8',
           cwd: process.cwd(),
-          stdio: 'inherit',
+          stdio: options.json || options.ciFormat ? 'pipe' : 'inherit', // Only inherit for non-JSON/non-CI mode
         });
-        console.log(result);
+
+        // For JSON mode, output just the result directly (no extra formatting)
+        if (options.json) {
+          process.stdout.write(result);
+        } else if (options.ciFormat) {
+          // For CI format, the result should already be clean formatted output
+          process.stdout.write(result);
+        } else {
+          // Normal mode: show the result
+          console.log(result);
+        }
       } catch (error) {
         // The subprocess already handles error output
         if (error.status !== 0) {

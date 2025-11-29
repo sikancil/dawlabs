@@ -18,7 +18,8 @@ const program = new Command();
 program
   .name('intelligent-analysis')
   .description('Oracle Intelligence deployment analysis for CI/CD workflows')
-  .option('--json', 'output results in JSON format for CI/CD integration')
+  .option('--json', 'output results in JSON format for machine processing')
+  .option('--ci-format', 'output clean, formatted summary for CI/CD pipelines')
   .option('--package <package>', 'analyze specific package only')
   .option('--fail-on-conflicts', 'fail workflow if conflicts are detected')
   .option('--confidence-threshold <number>', 'minimum confidence threshold (0.0-1.0)', '0.7');
@@ -32,7 +33,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   // When imported, extract options from process.argv that was set up by index.js
   const tempProgram = new Command();
   tempProgram
-    .option('--json', 'output results in JSON format for CI/CD integration')
+    .option('--json', 'output results in JSON format for machine processing')
+    .option('--ci-format', 'output clean, formatted summary for CI/CD pipelines')
     .option('--package <package>', 'analyze specific package only')
     .option('--fail-on-conflicts', 'fail workflow if conflicts are detected')
     .option('--confidence-threshold <number>', 'minimum confidence threshold (0.0-1.0)', '0.7');
@@ -54,7 +56,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
  * Run comprehensive intelligence analysis on all packages
  */
 async function runIntelligentAnalysis() {
-  const spinner = ora('🧠 Running Oracle Intelligence analysis...').start();
+  // Only use spinner in non-JSON mode
+  const spinner = options.json ? null : ora('🧠 Running Oracle Intelligence analysis...').start();
   const results = [];
 
   try {
@@ -64,86 +67,115 @@ async function runIntelligentAnalysis() {
       : await findWorkspacePackages();
 
     if (packages.length === 0) {
-      spinner.warn('No packages found to analyze');
+      if (spinner) spinner.warn('No packages found to analyze');
       return [];
     }
 
-    spinner.text = `Analyzing ${packages.length} packages with Oracle Intelligence...`;
+    if (spinner) spinner.text = `Analyzing ${packages.length} packages with Oracle Intelligence...`;
+
+    // Temporarily redirect console.log to silence in JSON mode
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+
+    if (options.json) {
+      // Silence all console output in JSON mode
+      console.log = () => {};
+      console.error = () => {};
+    }
 
     const analyzer = new OracleIntelligencePackageAnalyzer();
     const dashboard = new OracleIntelligenceDashboard();
 
-    // Analyze each package
-    for (const pkg of packages) {
-      spinner.text = `Analyzing ${pkg.name}@${pkg.version}...`;
+    try {
+      // Analyze each package
+      for (const pkg of packages) {
+        if (spinner) spinner.text = `Analyzing ${pkg.name}@${pkg.version}...`;
 
-      try {
-        const analysis = await analyzer.analyzeWithIntelligence(pkg.name, pkg.version, pkg.path);
+        try {
+          const analysis = await analyzer.analyzeWithIntelligence(pkg.name, pkg.version, pkg.path);
 
-        results.push(analysis);
+          results.push(analysis);
 
-        const confidence = Math.round(analysis.consensusScore * 100);
-        const status = analysis.analysis.state;
+          // Only show progress in non-JSON mode
+          if (spinner) {
+            const confidence = Math.round(analysis.consensusScore * 100);
+            const status = analysis.analysis.state;
 
-        console.log(
-          `${status === 'new-package' ? '🆕' : status === 'version-exists' ? '⚠️' : '✅'} ` +
-            `${pkg.name}@${pkg.version}: ${status} (${confidence}% confidence)`,
-        );
-      } catch (error) {
-        console.error(chalk.red(`❌ Failed to analyze ${pkg.name}: ${error.message}`));
-        results.push({
-          packageName: pkg.name,
-          version: pkg.version,
-          overallStatus: 'ERROR',
-          error: error.message,
-          confidence: 0,
-        });
-      }
-    }
-
-    spinner.succeed('Oracle Intelligence analysis completed');
-
-    // Check for conflicts if fail-on-conflicts is enabled
-    if (options.failOnConflicts) {
-      const conflicts = results.filter(
-        r => r.analysis?.conflicts?.length > 0 || r.overallStatus === 'CONFLICT',
-      );
-
-      if (conflicts.length > 0) {
-        console.log(chalk.red(`\n⚠️  Found ${conflicts.length} conflicts. Failing as requested.`));
-
-        if (!options.json) {
-          await dashboard.displayIntelligenceAnalysis(results);
+            originalConsoleLog(
+              `${status === 'new-package' ? '🆕' : status === 'version-exists' ? '⚠️' : '✅'} ` +
+                `${pkg.name}@${pkg.version}: ${status} (${confidence}% confidence)`,
+            );
+          }
+        } catch (error) {
+          if (spinner) {
+            originalConsoleError(chalk.red(`❌ Failed to analyze ${pkg.name}: ${error.message}`));
+          }
+          results.push({
+            packageName: pkg.name,
+            version: pkg.version,
+            overallStatus: 'ERROR',
+            error: error.message,
+            confidence: 0,
+          });
         }
+      }
 
-        process.exit(1);
+      if (spinner) spinner.succeed('Oracle Intelligence analysis completed');
+
+      // Check for conflicts if fail-on-conflicts is enabled
+      if (options.failOnConflicts) {
+        const conflicts = results.filter(
+          r => r.analysis?.conflicts?.length > 0 || r.overallStatus === 'CONFLICT',
+        );
+
+        if (conflicts.length > 0) {
+          if (!options.json) {
+            originalConsoleLog(
+              chalk.red(`\n⚠️  Found ${conflicts.length} conflicts. Failing as requested.`),
+            );
+          }
+
+          if (!options.json) {
+            await dashboard.displayIntelligenceAnalysis(results);
+          }
+
+          process.exit(1);
+        }
+      }
+
+      // Check confidence threshold
+      const lowConfidence = results.filter(
+        r => r.consensusScore < parseFloat(options.confidenceThreshold),
+      );
+
+      if (lowConfidence.length > 0 && !options.json) {
+        originalConsoleLog(
+          chalk.yellow(
+            `\n⚠️  ${lowConfidence.length} packages have low confidence (<${options.confidenceThreshold * 100}%)`,
+          ),
+        );
+      }
+
+      // Display detailed analysis if not JSON mode
+      if (!options.json && results.length > 0) {
+        await dashboard.displayIntelligenceAnalysis(results);
+      }
+
+      return results;
+    } finally {
+      // Restore console output
+      if (options.json) {
+        console.log = originalConsoleLog;
+        console.error = originalConsoleError;
       }
     }
-
-    // Check confidence threshold
-    const lowConfidence = results.filter(
-      r => r.consensusScore < parseFloat(options.confidenceThreshold),
-    );
-
-    if (lowConfidence.length > 0) {
-      console.log(
-        chalk.yellow(
-          `\n⚠️  ${lowConfidence.length} packages have low confidence (<${options.confidenceThreshold * 100}%)`,
-        ),
-      );
-    }
-
-    // Display detailed analysis if not JSON mode
-    if (!options.json && results.length > 0) {
-      await dashboard.displayIntelligenceAnalysis(results);
-    }
-
-    return results;
   } catch (error) {
-    spinner.fail('Oracle Intelligence analysis failed');
-    console.error(chalk.red(`Error: ${error.message}`));
-    if (options.verbose) {
-      console.error(error.stack);
+    if (spinner) spinner.fail('Oracle Intelligence analysis failed');
+    if (!options.json) {
+      console.error(chalk.red(`Error: ${error.message}`));
+      if (options.verbose) {
+        console.error(error.stack);
+      }
     }
     process.exit(1);
   }
@@ -171,7 +203,29 @@ async function main() {
     const results = await runIntelligentAnalysis();
 
     if (options.json) {
-      console.log(JSON.stringify(results, null, 2));
+      // Output clean JSON only - no preamble, no formatting
+      process.stdout.write(JSON.stringify(results));
+    } else if (options.ciFormat) {
+      // Output clean, formatted CI summary
+      process.stdout.write('\n📦 Oracle Intelligence Analysis Summary:\n');
+
+      results.forEach(pkg => {
+        const status = pkg.analysis.state === 'version-violation' ? '⚠️' : '✅';
+        const confidence = Math.round(pkg.analysis.confidence * 100);
+        const conflicts = pkg.analysis.conflicts.length;
+        process.stdout.write(
+          `  ${status} ${pkg.packageName}@v${pkg.localVersion} (${confidence}% confidence)\n`,
+        );
+        if (conflicts > 0) {
+          process.stdout.write(`     → ${conflicts} conflict(s) detected\n`);
+        }
+      });
+
+      const totalPkgs = results.length;
+      const conflictPkgs = results.filter(p => p.analysis.conflicts.length > 0).length;
+      process.stdout.write(
+        `\n📊 Summary: ${totalPkgs - conflictPkgs}/${totalPkgs} packages ready for publishing\n`,
+      );
     } else {
       const successCount = results.filter(
         r => r.overallStatus !== 'ERROR' && r.overallStatus !== 'CONFLICT',
@@ -213,7 +267,8 @@ export async function runAnalysisWithOptions(analysisOptions) {
 
     // Handle output formatting based on options
     if (options.json) {
-      console.log(JSON.stringify(results, null, 2));
+      // Output clean JSON only - no preamble, no formatting
+      process.stdout.write(JSON.stringify(results));
     } else {
       const successCount = results.filter(
         r => r.overallStatus !== 'ERROR' && r.overallStatus !== 'CONFLICT',

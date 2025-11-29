@@ -363,73 +363,18 @@ jobs:
         run: |
           echo "🧠 Running Oracle Intelligence Analysis..."
 
-          # Create a simple Node.js script to extract and display the analysis
-          cat > extract-analysis.cjs << 'EOF'
-          const { execSync } = require('child_process');
+          # Get clean CI-formatted output directly from the command
+          ANALYSIS_OUTPUT=$(node tools/internal-cli/index.js intelligent-analysis --ci-format 2>/dev/null)
+          echo "$ANALYSIS_OUTPUT"
 
-          try {
-            // Run the analysis and capture output
-            const rawOutput = execSync('node tools/internal-cli/index.js intelligent-analysis --json 2>/dev/null', { encoding: 'utf8' });
+          # Extract package count for GitHub Actions outputs
+          TOTAL_PACKAGES=$(echo "$ANALYSIS_OUTPUT" | grep -c "✅\\|⚠️" || echo "0")
+          READY_PACKAGES=$(echo "$ANALYSIS_OUTPUT" | grep -c "✅" || echo "0")
 
-            // Extract JSON from the output (find the array start by looking for exact pattern)
-            const jsonArrayStart = rawOutput.indexOf('\\n[');
-            let jsonStartIndex;
-            if (jsonArrayStart === -1) {
-              // Try alternative pattern
-              const jsonArrayStart2 = rawOutput.indexOf('\\n  [');
-              if (jsonArrayStart2 === -1) {
-                console.log('❌ No JSON array found in analysis output');
-                process.exit(1);
-              }
-              jsonStartIndex = jsonArrayStart2;
-            } else {
-              jsonStartIndex = jsonArrayStart;
-            }
-
-            // Extract from array start to the end, but remove trailing 'null'
-            let jsonString = rawOutput.substring(jsonStartIndex + 1).trim();
-
-            // Remove trailing 'null' if present
-            if (jsonString.endsWith('null')) {
-              jsonString = jsonString.slice(0, -4).trim();
-            }
-
-            const analysis = JSON.parse(jsonString);
-
-            console.log('');
-            console.log('📦 Oracle Intelligence Analysis Summary:');
-
-            analysis.forEach(pkg => {
-              const status = pkg.analysis.state === 'version-violation' ? '⚠️' : '✅';
-              const confidence = Math.round(pkg.analysis.confidence * 100);
-              const conflicts = pkg.analysis.conflicts.length;
-              console.log('  ' + status + ' ' + pkg.packageName + '@v' + pkg.localVersion + ' (' + confidence + '% confidence)');
-              if (conflicts > 0) {
-                console.log('     → ' + conflicts + ' conflict(s) detected');
-              }
-            });
-
-            const totalPkgs = analysis.length;
-            const conflictPkgs = analysis.filter(p => p.analysis.conflicts.length > 0).length;
-            console.log('');
-            console.log('📊 Summary: ' + (totalPkgs - conflictPkgs) + '/' + totalPkgs + ' packages ready for publishing');
-
-            // Save JSON for potential downstream use
-            require('fs').writeFileSync('oracle-intelligence-analysis.json', JSON.stringify(analysis, null, 2));
-
-            // Set output for GitHub Actions
-            console.log('::set-output name=analysis-complete::true');
-            console.log('::set-output name=packages-ready::' + (totalPkgs - conflictPkgs));
-            console.log('::set-output name=total-packages::' + totalPkgs);
-
-          } catch (error) {
-            console.log('❌ Could not parse analysis results: ' + error.message);
-            console.log('::set-output name=analysis-complete::false');
-            process.exit(1);
-          }
-          EOF
-
-          node extract-analysis.cjs
+          # Set GitHub Actions outputs (using file-based approach to avoid deprecation warnings)
+          echo "analysis-complete=true" >> $GITHUB_OUTPUT
+          echo "packages-ready=$READY_PACKAGES" >> $GITHUB_OUTPUT
+          echo "total-packages=$TOTAL_PACKAGES" >> $GITHUB_OUTPUT
 
       # Create Release Pull Request or Publish
       - name: Create Release Pull Request or Publish
