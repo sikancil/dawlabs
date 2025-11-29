@@ -51,37 +51,74 @@ jobs:
         id: intelligence
         run: |
           echo "🧠 Running Oracle Intelligence Analysis..."
-          # Run analysis and capture the JSON output for summary display
-          OUTPUT=$(node tools/internal-cli/index.js intelligent-analysis --json 2>/dev/null)
-          echo "$OUTPUT" | tail -1 > oracle-intelligence-analysis.json
 
-          # Display clean summary
-          echo ""
-          echo "📦 Oracle Intelligence Analysis Summary:"
-          if [ -s oracle-intelligence-analysis.json ]; then
-            node -e "
-              try {
-                const analysis = JSON.parse(require('fs').readFileSync('oracle-intelligence-analysis.json', 'utf8'));
-                analysis.forEach(pkg => {
-                  const status = pkg.analysis.state === 'version-violation' ? '⚠️' : '✅';
-                  const confidence = Math.round(pkg.analysis.confidence * 100);
-                  const conflicts = pkg.analysis.conflicts.length;
-                  console.log('  ' + status + ' ' + pkg.packageName + '@v' + pkg.localVersion + ' (' + confidence + '% confidence)');
-                  if (conflicts > 0) {
-                    console.log('     → ' + conflicts + ' conflict(s) detected');
-                  }
-                });
+          # Create a simple Node.js script to extract and display the analysis
+          cat > extract-analysis.js << 'EOF'
+          const { execSync } = require('child_process');
 
-                const totalPkgs = analysis.length;
-                const conflictPkgs = analysis.filter(p => p.analysis.conflicts.length > 0).length;
-                console.log('\\\\n📊 Summary: ' + (totalPkgs - conflictPkgs) + '/' + totalPkgs + ' packages ready for publishing');
-              } catch (e) {
-                console.log('❌ Could not parse analysis results');
+          try {
+            // Run the analysis and capture output
+            const rawOutput = execSync('node tools/internal-cli/index.js intelligent-analysis --json 2>/dev/null', { encoding: 'utf8' });
+
+            // Extract JSON from the output (find the array start by looking for exact pattern)
+            const jsonArrayStart = rawOutput.indexOf('\n[');
+            let jsonStartIndex;
+            if (jsonArrayStart === -1) {
+              // Try alternative pattern
+              const jsonArrayStart2 = rawOutput.indexOf('\n  [');
+              if (jsonArrayStart2 === -1) {
+                console.log('❌ No JSON array found in analysis output');
+                process.exit(1);
               }
-            "
-          else
-            echo "⚠️  Analysis completed but no JSON data captured"
-          fi
+              jsonStartIndex = jsonArrayStart2;
+            } else {
+              jsonStartIndex = jsonArrayStart;
+            }
+
+            // Extract from array start to the end, but remove trailing 'null'
+            let jsonString = rawOutput.substring(jsonStartIndex + 1).trim();
+
+            // Remove trailing 'null' if present
+            if (jsonString.endsWith('null')) {
+              jsonString = jsonString.slice(0, -4).trim();
+            }
+
+            const analysis = JSON.parse(jsonString);
+
+            console.log('');
+            console.log('📦 Oracle Intelligence Analysis Summary:');
+
+            analysis.forEach(pkg => {
+              const status = pkg.analysis.state === 'version-violation' ? '⚠️' : '✅';
+              const confidence = Math.round(pkg.analysis.confidence * 100);
+              const conflicts = pkg.analysis.conflicts.length;
+              console.log('  ' + status + ' ' + pkg.packageName + '@v' + pkg.localVersion + ' (' + confidence + '% confidence)');
+              if (conflicts > 0) {
+                console.log('     → ' + conflicts + ' conflict(s) detected');
+              }
+            });
+
+            const totalPkgs = analysis.length;
+            const conflictPkgs = analysis.filter(p => p.analysis.conflicts.length > 0).length;
+            console.log('');
+            console.log('📊 Summary: ' + (totalPkgs - conflictPkgs) + '/' + totalPkgs + ' packages ready for publishing');
+
+            // Save JSON for potential downstream use
+            require('fs').writeFileSync('oracle-intelligence-analysis.json', JSON.stringify(analysis, null, 2));
+
+            // Set output for GitHub Actions
+            console.log('::set-output name=analysis-complete::true');
+            console.log('::set-output name=packages-ready::' + (totalPkgs - conflictPkgs));
+            console.log('::set-output name=total-packages::' + totalPkgs);
+
+          } catch (error) {
+            console.log('❌ Could not parse analysis results: ' + error.message);
+            console.log('::set-output name=analysis-complete::false');
+            process.exit(1);
+          }
+          EOF
+
+          node extract-analysis.js
 
       # Create Release Pull Request or Publish
       - name: Create Release Pull Request or Publish
