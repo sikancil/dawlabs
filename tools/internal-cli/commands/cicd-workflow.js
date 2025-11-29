@@ -364,7 +364,7 @@ jobs:
           echo "🧠 Running Oracle Intelligence Analysis..."
 
           # Create a simple Node.js script to extract and display the analysis
-          cat > extract-analysis.js << 'EOF'
+          cat > extract-analysis.cjs << 'EOF'
           const { execSync } = require('child_process');
 
           try {
@@ -429,7 +429,7 @@ jobs:
           }
           EOF
 
-          node extract-analysis.js
+          node extract-analysis.cjs
 
       # Create Release Pull Request or Publish
       - name: Create Release Pull Request or Publish
