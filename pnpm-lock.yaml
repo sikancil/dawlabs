@@ -127,7 +127,7 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  tools/deployment-setup:
+  tools/internal-cli:
     dependencies:
       chalk:
         specifier: ^5.3.0
