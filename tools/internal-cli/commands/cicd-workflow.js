@@ -377,6 +377,8 @@ jobs:
           publish: pnpm changeset publish
           commit: "chore: update packages"
           title: "chore: update packages"
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 
       # Display release results
       - name: Release Results
