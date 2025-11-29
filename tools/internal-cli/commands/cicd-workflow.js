@@ -307,7 +307,7 @@ export async function setupCicdWorkflow(options = {}) {
   }
 }
 
-function generateWorkflowContent(orgName, _repoName) {
+function generateWorkflowContent(_orgName, _repoName) {
   return `name: Release
 
 # Configure workflow permissions for security and access control
@@ -315,11 +315,6 @@ permissions:
   contents: write
   pull-requests: write
   id-token: write # Required for OIDC authentication
-
-# Environment configuration for secure publishing
-environments:
-  production:
-    url: https://www.npmjs.com/package/@${orgName}/*
 
 # Control when workflow runs
 on:

@@ -6,11 +6,6 @@ permissions:
   pull-requests: write
   id-token: write # Required for OIDC authentication
 
-# Environment configuration for secure publishing
-environments:
-  production:
-    url: https://www.npmjs.com/package/@dawlabs/*
-
 # Control when workflow runs
 on:
   push:
