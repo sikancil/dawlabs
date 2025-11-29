@@ -1,6 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "DAWLabs Monorepo",
+  "_comment": {
+    "overview": "Root TypeScript configuration for the DAWLabs monorepo providing unified type checking across all packages and tools",
+    "purpose": "Configures TypeScript compiler options, path mappings, and project references for consistent type checking",
+    "integration": "Extended by individual package configurations that inherit these base settings and add package-specific customizations"
+  },
   "extends": "./config/tsconfig.base.json",
   "files": [],
   "references": [

@@ -1,5 +1,48 @@
 #!/usr/bin/env node
 
+/**
+ * nCurl CLI - LLM-Optimized HTTP Client Command Line Interface
+ *
+ * @context Command-line interface for the nCurl HTTP client optimized for AI/LLM interactions
+ * @purpose Provides intuitive, LLM-friendly commands for HTTP operations with intelligent defaults and error handling
+ * @integration Used as standalone CLI tool and can be integrated into other DAWLabs tools and scripts
+ * @workflow Processes command-line arguments, applies intelligent inference, and delegates to core HTTP functionality
+ *
+ * LLM-Optimized Design Principles:
+ * - Smart command structure that matches natural language patterns
+ * - Automatic method detection from URL patterns and data presence
+ * - Forgiving argument handling that accommodates LLM variations
+ * - Helpful error messages with actionable suggestions
+ * - Comprehensive guidance for common API interaction patterns
+ *
+ * Command Structure:
+ * - Direct method commands: get, post, put, delete (explicit method specification)
+ * - Smart inference command: run (automatic method and content detection)
+ * - Helper commands: api-info (provides LLM guidance and examples)
+ * - Flexible argument handling for various LLM input styles
+ *
+ * Error Handling Strategy:
+ * - Graceful handling of unknown commands with helpful suggestions
+ * - Intelligent command correction for common LLM mistakes
+ * - Comprehensive error messages with actionable guidance
+ * - Automatic help display for missing commands or arguments
+ *
+ * Integration Examples:
+ * - Can be used programmatically by importing and calling directly
+ * - Integrates with build scripts and CI/CD pipelines
+ * - Provides foundation for higher-level HTTP automation tools
+ *
+ * @example
+ * // Standalone execution
+ * node cli.js get https://api.example.com/users
+ *
+ * // With options
+ * node cli.js post https://api.example.com/users --json '{"name":"John"}'
+ *
+ * // Smart mode (automatic inference)
+ * node cli.js run https://api.example.com/users/create --json '{"name":"John"}'
+ */
+
 import { Command } from 'commander';
 import { main } from './index.js';
 
@@ -28,7 +71,12 @@ program
   .option('-s, --silent', 'Silent mode')
   .action(async (url, options, command) => {
     try {
-      const opts = { ...options, method: 'GET', url, args: command.args.slice(1) };
+      const opts = {
+        ...options,
+        method: 'GET',
+        url,
+        args: command.args.slice(1),
+      };
       await main(opts);
     } catch (error) {
       console.error('Error:', error.message);
@@ -53,7 +101,12 @@ program
   .option('-s, --silent', 'Silent mode')
   .action(async (url, options, command) => {
     try {
-      const opts = { ...options, method: 'POST', url, args: command.args.slice(1) };
+      const opts = {
+        ...options,
+        method: 'POST',
+        url,
+        args: command.args.slice(1),
+      };
       await main(opts);
     } catch (error) {
       console.error('Error:', error.message);
@@ -78,7 +131,12 @@ program
   .option('-s, --silent', 'Silent mode')
   .action(async (url, options, command) => {
     try {
-      const opts = { ...options, method: 'PUT', url, args: command.args.slice(1) };
+      const opts = {
+        ...options,
+        method: 'PUT',
+        url,
+        args: command.args.slice(1),
+      };
       await main(opts);
     } catch (error) {
       console.error('Error:', error.message);
@@ -101,7 +159,12 @@ program
   .option('-s, --silent', 'Silent mode')
   .action(async (url, options, command) => {
     try {
-      const opts = { ...options, method: 'DELETE', url, args: command.args.slice(1) };
+      const opts = {
+        ...options,
+        method: 'DELETE',
+        url,
+        args: command.args.slice(1),
+      };
       await main(opts);
     } catch (error) {
       console.error('Error:', error.message);

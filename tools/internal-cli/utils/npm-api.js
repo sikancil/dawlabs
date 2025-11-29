@@ -213,7 +213,9 @@ function formatSemVer(semver) {
 
 export async function getNpmPackageInfo(packageName) {
   try {
-    const result = execSync(`npm view ${packageName} --json`, { encoding: 'utf8' });
+    const result = execSync(`npm view ${packageName} --json`, {
+      encoding: 'utf8',
+    });
     return JSON.parse(result);
   } catch {
     return null;

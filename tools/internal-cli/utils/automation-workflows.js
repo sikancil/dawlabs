@@ -587,7 +587,11 @@ export class AutomationWorkflows {
    */
   async executeParallelAnalysis(_execution) {
     // Implementation for parallel analysis
-    return { step: 'parallel-intelligence-analysis', success: true, confidence: 0.8 };
+    return {
+      step: 'parallel-intelligence-analysis',
+      success: true,
+      confidence: 0.8,
+    };
   }
 
   async executeDependencyAnalysis(_execution) {
@@ -597,7 +601,11 @@ export class AutomationWorkflows {
 
   async executePublishingOrderOptimization(_execution) {
     // Implementation for publishing order optimization
-    return { step: 'publishing-order-optimization', success: true, confidence: 0.8 };
+    return {
+      step: 'publishing-order-optimization',
+      success: true,
+      confidence: 0.8,
+    };
   }
 
   async executeAtomicRelease(_execution) {

@@ -1,13 +1,87 @@
 /**
- * NPM Version History Oracle - Tracks unpublished versions and enforces npm's version policies
+ * NPM Version History Oracle - Comprehensive version compliance and policy enforcement
  *
- * CRITICAL: npm does NOT allow version reuse even after unpublishing!
+ * @context Critical Oracle component for DAWLabs deployment intelligence system
+ * @purpose Tracks complete version history including unpublished versions and enforces npm's strict version policies
+ * @integration Used by multi-oracle analyzer to prevent critical npm policy violations during deployment
+ * @workflow Analyzes version compliance across multiple data sources to ensure safe publishing decisions
+ *
+ * CRITICAL NPM POLICY ENFORCEMENT:
+ * npm does NOT allow version reuse even after unpublishing!
  * Once a version is published, that version number is permanently burned.
+ *
+ * This oracle prevents deployment failures by enforcing:
+ * - Version burn detection: Identifies all previously published versions (including unpublished)
+ * - Version reuse prevention: Blocks attempts to reuse burned version numbers
+ * - Semantic version compliance: Ensures new versions are greater than previous versions
+ * - Policy violation detection: Identifies and reports critical npm policy conflicts
+ *
+ * Multi-Source Intelligence Gathering:
+ * 1. NPM Registry: Current published versions via npm view command
+ * 2. NPM Audit API: Complete version history including unpublished versions
+ * 3. Git History: Local version tags and development history
+ * 4. Combined Analysis: Merges all sources to create comprehensive version history
+ *
+ * Capabilities:
+ * - Complete version history reconstruction from multiple sources
+ * - Burned version detection and enforcement
+ * - Version compliance analysis with confidence scoring
+ * - Intelligent version suggestions for conflict resolution
+ * - Real-time npm policy violation detection
+ * - Cached results for performance optimization
+ *
+ * Use Cases:
+ * - Pre-publish validation to prevent npm policy violations
+ * - CI/CD pipeline integration for automated compliance checking
+ * - Version conflict resolution and intelligent version bumping
+ * - Deployment safety checks and rollback prevention
+ *
+ * @example
+ * const oracle = new NpmVersionHistoryOracle();
+ * const analysis = await oracle.analyze('@dawlabs/ncurl', '0.0.3');
+ *
+ * if (analysis.state === 'version-violation') {
+ *   console.log('Cannot publish - version violation detected');
+ *   console.log('Suggested version:', analysis.conflicts[0].suggestedVersion);
+ * }
  */
 
 import { execSync } from 'child_process';
 
 export class NpmVersionHistoryOracle {
+  /**
+   * Initialize NPM Version History Oracle with configurable options
+   *
+   * @param {Object} options - Configuration options for the oracle
+   * @param {number} [options.cacheTimeout=600000] - Cache timeout in milliseconds (default: 10 minutes)
+   * @param {number} [options.timeout=15000] - Request timeout in milliseconds (default: 15 seconds)
+   * @param {string} [options.auditUrl='https://audit.npmjs.org'] - NPM audit API URL
+   *
+   * @constructor
+   * @workflow Sets up caching, timeouts, and API endpoints for version history analysis
+   * @integration Configures oracle for optimal performance and reliability
+   * @purpose Provides flexible configuration for different deployment environments
+   *
+   * Configuration Strategy:
+   * - Cache Timeout: Balances performance with data freshness (10 minutes default)
+   * - Request Timeout: Prevents hanging operations during CI/CD workflows (15 seconds)
+   * - Audit URL: Configurable endpoint for NPM audit API access
+   *
+   * Performance Considerations:
+   * - Caching reduces redundant NPM registry calls
+   * - Timeouts prevent CI/CD pipeline blocking
+   * - Memory-based caching for fast repeated analysis
+   *
+   * @example
+   * // Default configuration
+   * const oracle = new NpmVersionHistoryOracle();
+   *
+   * // Custom configuration for CI/CD
+   * const oracle = new NpmVersionHistoryOracle({
+   *   cacheTimeout: 5 * 60 * 1000, // 5 minutes for faster updates
+   *   timeout: 30000, // 30 seconds for slower networks
+   * });
+   */
   constructor(options = {}) {
     this.name = 'NpmVersionHistoryOracle';
     this.cache = new Map();
@@ -17,11 +91,59 @@ export class NpmVersionHistoryOracle {
   }
 
   /**
-   * Oracle interface method - analyzes version compliance for publishing
+   * Oracle interface method - analyzes version compliance for publishing safety
+   *
+   * @param {string} packageName - Name of the package to analyze (e.g., '@dawlabs/ncurl')
+   * @param {string} localVersion - Local version being considered for publishing
+   * @param {string} _packagePath - Path to package (unused in this oracle)
+   * @returns {Promise<Object>} Comprehensive version compliance analysis result
+   * @returns {string} returns.state - Analysis result: 'version-compliant' or 'version-violation'
+   * @returns {number} returns.confidence - Confidence score (0.0-1.0) in the analysis accuracy
+   * @returns {Array<string>} returns.publishedVersions - Currently published versions from registry
+   * @returns {Array<Object>} returns.conflicts - Detected policy violations and conflicts
+   * @returns {Array<string>} returns.burnedVersions - All versions that cannot be reused (permanent)
+   * @returns {Object} returns.versionHistory - Complete version history from all sources
+   * @returns {Object} returns.compliance - Detailed compliance analysis with recommendations
+   * @returns {string} returns.source - Source identifier for this oracle
+   *
+   * @workflow Primary interface for Oracle Intelligence system to analyze version compliance
+   * @integration Called by multi-oracle analyzer during package analysis workflow
+   * @purpose Enforces npm version policies and prevents critical publishing errors
+   *
+   * Analysis Process:
+   * 1. Version History Retrieval: Get complete version history from multiple sources
+   * 2. Compliance Analysis: Check version against all previously published versions
+   * 3. Burn Detection: Identify if version was previously published (including unpublished)
+   * 4. Semantic Validation: Ensure new version is greater than all previous versions
+   * 5. Conflict Generation: Create detailed conflict reports for policy violations
+   * 6. Resolution Suggestions: Provide intelligent version bump recommendations
+   *
+   * Policy Enforcement Rules:
+   * - CRITICAL: Version reuse is absolutely forbidden by npm policy
+   * - Version numbers are permanently burned after publication
+   * - New versions must be semantically greater than previous versions
+   * - Unpublished versions still count as burned versions
+   *
+   * Result States:
+   * - 'version-compliant': Safe to publish, no policy violations detected
+   * - 'version-violation': Critical policy violation, publishing blocked
+   *
+   * Conflict Types:
+   * - 'version-reuse-attempted': Attempting to reuse a burned version
+   * - 'version-not-greater': New version is not greater than previous versions
+   * - 'analysis-failed': Technical failure during analysis
+   *
+   * @example
+   * const result = await oracle.analyze('@dawlabs/ncurl', '0.0.3');
+   *
+   * if (result.state === 'version-violation') {
+   *   console.log('Publishing blocked:', result.conflicts[0].message);
+   *   console.log('Suggested version:', result.conflicts[0].suggestedVersion);
+   * } else {
+   *   console.log('Version is compliant for publishing');
+   * }
    */
   async analyze(packageName, localVersion, _packagePath) {
-    console.log(`\n🔍 [NpmVersionHistoryOracle] Analyzing ${packageName}@${localVersion}`);
-
     try {
       const complianceAnalysis = await this.analyzeVersionCompliance(packageName, localVersion);
 
@@ -46,8 +168,6 @@ export class NpmVersionHistoryOracle {
         source: 'version-history-oracle',
       };
     } catch (error) {
-      console.log(`❌ [NpmVersionHistoryOracle] Analysis failed:`, error.message);
-
       return {
         state: 'unknown',
         confidence: 0.1,
@@ -72,8 +192,6 @@ export class NpmVersionHistoryOracle {
    * This is the missing piece that caused our deployment failure!
    */
   async getCompleteVersionHistory(packageName) {
-    console.log(`\n🔍 [VersionHistoryOracle] Getting COMPLETE version history for ${packageName}`);
-
     const cacheKey = `${packageName}_complete_history`;
 
     if (this.cache.has(cacheKey)) {
@@ -114,20 +232,8 @@ export class NpmVersionHistoryOracle {
         timestamp: Date.now(),
       });
 
-      console.log(
-        `📋 [VersionHistoryOracle] Found ${completeHistory.allVersions.length} total versions`,
-      );
-      console.log(`   📦 Published: ${completeHistory.publishedVersions.length}`);
-      console.log(`   🚫 Unpublished: ${completeHistory.unpublishedVersions.length}`);
-      console.log(`   🔥 Burned versions: ${completeHistory.burnedVersions.length}`);
-
       return result;
     } catch (error) {
-      console.log(
-        `❌ [VersionHistoryOracle] Failed to get complete history for ${packageName}:`,
-        error.message,
-      );
-
       return {
         packageName,
         publishedVersions: [],
@@ -300,10 +406,6 @@ export class NpmVersionHistoryOracle {
    * CRITICAL: Analyze if current version violates npm's version rules
    */
   async analyzeVersionCompliance(packageName, currentVersion) {
-    console.log(
-      `\n🚨 [VersionHistoryOracle] Analyzing version compliance for ${packageName}@${currentVersion}`,
-    );
-
     const versionHistory = await this.getCompleteVersionHistory(packageName);
 
     const analysis = {
@@ -327,10 +429,6 @@ export class NpmVersionHistoryOracle {
 
     // CRITICAL CHECK 1: Version cannot be in burned versions
     if (versionHistory.burnedVersions.includes(currentVersion)) {
-      console.log(
-        `🔥 [VersionHistoryOracle] VERSION BURNED: ${currentVersion} was previously published and cannot be reused!`,
-      );
-
       analysis.canPublish = false;
       analysis.violationType = 'version-reuse-attempted';
       analysis.violationSeverity = 'critical';
@@ -347,10 +445,6 @@ export class NpmVersionHistoryOracle {
     // CRITICAL CHECK 2: Version must be greater than all previous versions
     const highestVersion = this.getHighestVersion(versionHistory.allVersions);
     if (highestVersion && this.compareVersions(currentVersion, highestVersion) <= 0) {
-      console.log(
-        `📈 [VersionHistoryOracle] VERSION TOO LOW: ${currentVersion} must be greater than ${highestVersion}`,
-      );
-
       analysis.canPublish = false;
       analysis.violationType = 'version-not-greater';
       analysis.violationSeverity = 'high';
@@ -365,7 +459,6 @@ export class NpmVersionHistoryOracle {
     }
 
     // Check passed
-    console.log(`✅ [VersionHistoryOracle] VERSION COMPLIANT: ${currentVersion} can be published`);
 
     return analysis;
   }
@@ -475,7 +568,6 @@ export class NpmVersionHistoryOracle {
    */
   clearCache() {
     this.cache.clear();
-    console.log(`🧹 [VersionHistoryOracle] Cache cleared`);
   }
 
   /**

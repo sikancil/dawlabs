@@ -6,24 +6,88 @@ import { RealNpmRegistryOracle } from './real-npm-registry-oracle.js';
 
 /**
  * Oracle Intelligence Package Analyzer
- * Implements redundancy and consensus-based package state analysis
+ *
+ * @context Core component of the DAWLabs deployment intelligence system
+ * @purpose Implements redundancy and consensus-based package state analysis using multiple oracle sources
+ * @integration Used by intelligent-analysis command to determine package publishing readiness
+ * @workflow Called for each package during CI/CD pipeline to analyze version compliance and conflicts
+ *
+ * This class coordinates 7 different oracle intelligence sources to provide
+ * comprehensive package analysis with built-in redundancy and confidence scoring.
+ * The system ensures reliable deployment decisions by cross-validating information
+ * from multiple independent sources before making recommendations.
+ *
+ * @architecture Multi-Oracle Consensus System
+ * - Each oracle provides independent analysis with confidence scores
+ * - Weighted consensus algorithm resolves conflicting information
+ * - Version compliance checking prevents critical publishing errors
+ * - Reliability scoring ensures trustworthy recommendations
  */
 export class OracleIntelligencePackageAnalyzer {
+  /**
+   * Initialize the Oracle Intelligence Package Analyzer
+   *
+   * @constructor
+   * @description Creates analyzer with 7 oracle intelligence sources and consensus threshold
+   *
+   * The oracles are ordered by reliability and importance:
+   * 1. RealNpmRegistryOracle - Direct npm registry queries (most reliable)
+   * 2. NpmVersionHistoryOracle - Version compliance and history (critical for safety)
+   * 3. GitHistoryOracle - Version change tracking and git patterns
+   * 4. BuildArtifactOracle - Build state validation
+   * 5. LocalStateOracle - Local package existence and version matching
+   * 6. NetworkCacheOracle - Performance optimization through caching
+   * 7. SemanticVersionOracle - Semantic version compliance
+   *
+   * @workflow During CI/CD pipeline, each package is analyzed by all oracles
+   * @integration The consensus threshold ensures majority agreement before recommendations
+   */
   constructor() {
     this.oracles = [
       new RealNpmRegistryOracle(),
-      new NpmVersionHistoryOracle(), // NEW: Critical version history enforcement
+      new NpmVersionHistoryOracle(), // Critical: Enforces version history compliance
       new GitHistoryOracle(),
       new BuildArtifactOracle(),
       new LocalStateOracle(),
       new NetworkCacheOracle(),
       new SemanticVersionOracle(),
     ];
-    this.consensusThreshold = 0.6; // 60% agreement required
+    this.consensusThreshold = 0.6; // 60% agreement required for reliable decisions
   }
 
   /**
    * Analyze package with multiple Oracle Intelligence sources
+   *
+   * @param {string} packageName - Name of the package to analyze (e.g., '@dawlabs/ncurl')
+   * @param {string} localVersion - Local version being analyzed (e.g., '0.0.3')
+   * @param {string} packagePath - File system path to the package directory
+   * @returns {Promise<Object>} Comprehensive analysis result with consensus data
+   * @returns {string} returns.packageName - Package name that was analyzed
+   * @returns {string} returns.localVersion - Local version that was analyzed
+   * @returns {string} returns.packagePath - Package path that was analyzed
+   * @returns {Object} returns.analysis - Fused analysis from all oracle sources
+   * @returns {Array} returns.oracleResults - Raw results from each oracle
+   * @returns {number} returns.consensusScore - Overall confidence score (0-1)
+   * @returns {number} returns.analysisTime - Total analysis time in milliseconds
+   * @returns {Object} returns.reliability - Reliability metrics
+   *
+   * @workflow Primary analysis method called during CI/CD pipeline
+   * @integration Coordinates parallel execution of all oracle sources
+   * @process
+   * 1. Execute all oracles in parallel for efficiency
+   * 2. Filter and collect successful analyses
+   * 3. Apply fusion algorithm to create consensus result
+   * 4. Calculate reliability and confidence scores
+   * 5. Return comprehensive analysis object
+   *
+   * @example
+   * const analyzer = new OracleIntelligencePackageAnalyzer();
+   * const result = await analyzer.analyzeWithIntelligence(
+   *   '@dawlabs/ncurl',
+   *   '0.0.3',
+   *   './packages/ncurl'
+   * );
+   * console.log(`Analysis confidence: ${result.consensusScore * 100}%`);
    */
   async analyzeWithIntelligence(packageName, localVersion, packagePath) {
     const analysisStart = Date.now();
@@ -84,6 +148,33 @@ export class OracleIntelligencePackageAnalyzer {
 
   /**
    * Fuse Oracle Intelligence from multiple oracle sources
+   *
+   * @param {Array<Object>} analyses - Successful oracle analyses to fuse
+   * @param {string} packageName - Package name being analyzed
+   * @param {string} localVersion - Local version being evaluated
+   * @returns {Promise<Object>} Fused analysis with consensus decisions
+   * @returns {string} returns.state - Final state decision (version-violation, version-exists, new-package, etc.)
+   * @returns {number} returns.confidence - Overall confidence in the decision
+   * @returns {Array<string>} returns.publishedVersions - Reconciled published versions
+   * @returns {Array<Object>} returns.conflicts - Aggregated and deduplicated conflicts
+   * @returns {Array<Object>} returns.recommendations - Intelligent recommendations
+   * @returns {string} returns.oracleIntelligenceLevel - Analysis quality level (advanced/standard/basic/minimal)
+   * @returns {number} returns.oracleAgreement - Oracle agreement percentage
+   * @returns {Object} returns.versionCompliance - Version compliance analysis results
+   *
+   * @workflow Critical decision-making algorithm that determines final analysis outcome
+   * @integration Combines all oracle results into single authoritative analysis
+   * @process
+   * 1. Check for CRITICAL version violations first (overrides all other logic)
+   * 2. Calculate weighted consensus based on oracle confidence scores
+   * 3. Aggregate conflicts from multiple sources with deduplication
+   * 4. Reconcile version information across oracles
+   * 5. Generate intelligent recommendations
+   *
+   * @critical Version compliance violations have highest priority and override consensus
+   * @example
+   * // If version compliance violation detected, returns critical violation state
+   * // regardless of other oracle agreements
    */
   async fuseOracleIntelligence(analyses, packageName, localVersion) {
     const states = analyses.map(a => a.result.state);
@@ -152,6 +243,39 @@ export class OracleIntelligencePackageAnalyzer {
 
   /**
    * CRITICAL: Check version compliance using NpmVersionHistoryOracle
+   *
+   * @param {Array<Object>} analyses - All successful oracle analyses
+   * @param {string} packageName - Package name being checked
+   * @param {string} localVersion - Local version to validate
+   * @returns {Promise<Object>} Version compliance analysis result
+   * @returns {boolean} returns.hasCriticalViolation - Whether critical violation exists
+   * @returns {boolean} returns.canPublish - Whether version can be published
+   * @returns {string} returns.recommendation - Recommendation action (proceed/version-bump-required)
+   * @returns {string} returns.reason - Explanation of compliance result
+   * @returns {Object} returns.violation - Violation details if critical violation exists
+   * @returns {string} returns.suggestedVersion - Suggested next version if violation
+   * @returns {string} returns.errorMessage - Human-readable error message
+   * @returns {string} returns.violationSeverity - Severity level (critical/high/medium/low)
+   * @returns {Object} returns.history - Complete version history data
+   * @returns {Object} returns.requirements - Version requirements and constraints
+   *
+   * @workflow SAFETY CHECK: Prevents critical npm publishing errors
+   * @integration Called before any consensus decisions to enforce version compliance
+   * @purpose Ensures adherence to npm version policies and prevents duplicate publishing
+   * @critical This is the most important validation - it blocks publishing if violated
+   *
+   * This method enforces critical npm policies:
+   * - Prevents reuse of previously published versions (npm policy violation)
+   * - Validates against version constraints and burned versions
+   * - Provides clear guidance for version resolution
+   *
+   * @example
+   * // Critical violation - prevents publishing
+   * const compliance = await checkVersionCompliance(analyses, '@dawlabs/ncurl', '0.0.3');
+   * if (compliance.hasCriticalViolation) {
+   *   console.log('❌ Cannot publish - version violation detected');
+   *   console.log(`💡 Suggested version: ${compliance.suggestedVersion}`);
+   * }
    */
   async checkVersionCompliance(analyses, packageName, localVersion) {
     // Find the version history oracle result
@@ -543,7 +667,11 @@ class BuildArtifactOracle {
       const packageJsonPath = join(packagePath, 'package.json');
 
       if (!existsSync(packageJsonPath)) {
-        return { state: 'invalid-package', confidence: 0.1, source: 'build-artifacts' };
+        return {
+          state: 'invalid-package',
+          confidence: 0.1,
+          source: 'build-artifacts',
+        };
       }
 
       const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
@@ -594,7 +722,11 @@ class LocalStateOracle {
       const packageJsonPath = join(packagePath, 'package.json');
 
       if (!existsSync(packageJsonPath)) {
-        return { state: 'package-not-found', confidence: 0.1, source: 'local-state' };
+        return {
+          state: 'package-not-found',
+          confidence: 0.1,
+          source: 'local-state',
+        };
       }
 
       const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));

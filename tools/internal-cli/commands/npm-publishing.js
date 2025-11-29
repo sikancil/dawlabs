@@ -1,3 +1,54 @@
+/**
+ * DAWLabs NPM Publishing Configuration Command - Comprehensive Package Publishing Setup
+ *
+ * @context Core NPM publishing configuration and verification command for the DAWLabs monorepo
+ * @purpose Provides comprehensive NPM registry setup, package publishing configuration, and trusted publishing automation
+ * @integration Used by CLI users and CI/CD pipelines for NPM registry authentication, package validation, and publishing workflows
+ * @workflow Manages NPM authentication, package.json validation, publishing configuration, and Oracle Intelligence integration
+ *
+ * Publishing Strategy:
+ * - Trusted Publishing: GitHub Actions OIDC-based authentication for secure, tokenless publishing
+ * - Interactive Setup: Step-by-step guided configuration for manual setup processes
+ * - Package Validation: Comprehensive package.json validation with NPM compliance checking
+ * - Oracle Intelligence: Multi-source analysis for publishing readiness and conflict detection
+ * - Smart Analysis: Automated package categorization and publishing recommendations
+ *
+ * Configuration Features:
+ * - NPM Registry Authentication: Both token-based and OIDC trusted publishing support
+ * - Package Discovery: Automatic workspace package scanning and classification
+ * - Publishing Configuration: publishConfig setup with proper access control
+ * - Repository Integration: GitHub repository validation and linking
+ * - Version Management: Version compliance checking and conflict resolution
+ *
+ * Security Features:
+ * - Token Security: Secure NPM token handling with clipboard integration
+ * - OIDC Authentication: GitHub Actions trusted publishing without exposed tokens
+ * - Access Control: Proper package access configuration for scoped packages
+ * - Repository Validation: Ensures packages are published to correct repositories
+ *
+ * Oracle Intelligence Integration:
+ * - Multi-Oracle Analysis: 7-source consensus for publishing decisions
+ * - Conflict Detection: Version conflict identification and resolution
+ * - Confidence Scoring: Reliability assessment for publishing readiness
+ * - Automated Recommendations: Data-driven publishing workflow suggestions
+ *
+ * User Experience:
+ * - Interactive Prompts: Guided setup with helpful explanations
+ * - Browser Integration: Automatic opening of NPM package pages
+ * - Clipboard Support: One-click copying of commands and configurations
+ * - Visual Feedback: Color-coded output and progress indicators
+ *
+ * @example
+ * // Interactive NPM publishing setup
+ * dawlabs-cli setup npm-publishing
+ *
+ * // Verify NPM publishing configuration
+ * dawlabs-cli verify npm-publishing
+ *
+ * // Diagnose NPM publishing issues
+ * dawlabs-cli diagnose publishing
+ */
+
 import chalk from 'chalk';
 import ora from 'ora';
 import inquirer from 'inquirer';
@@ -721,12 +772,18 @@ export async function setupNpmPublishing(options = {}) {
               name: '🚀 Oracle Intelligence first-time publishing workflow',
               value: 'oracle-intelligence-workflow',
             },
-            { name: 'Configure trusted publishing for all packages', value: 'configure-all' },
+            {
+              name: 'Configure trusted publishing for all packages',
+              value: 'configure-all',
+            },
             {
               name: 'Configure trusted publishing for specific packages',
               value: 'configure-specific',
             },
-            { name: 'Publish unpublished packages manually', value: 'publish-manual' },
+            {
+              name: 'Publish unpublished packages manually',
+              value: 'publish-manual',
+            },
             { name: 'Show current status', value: 'status' },
           ],
         },

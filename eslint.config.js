@@ -1,13 +1,47 @@
 /**
- * DAWLabs Monorepo ESLint Configuration
+ * DAWLabs Monorepo ESLint Configuration - Unified Code Quality Enforcement
  *
- * Main ESLint configuration for the DAWLabs monorepo that combines base rules,
- * TypeScript support, and appropriate ignores for build outputs and dependencies.
- * This configuration provides consistent code quality enforcement across all packages.
+ * @context Root ESLint configuration providing consistent code quality standards across the DAWLabs monorepo
+ * @purpose Enforces unified coding practices, TypeScript support, and appropriate linting rules for all packages and tools
+ * @integration Used throughout the monorepo by all packages, tools, and applications for automated code quality checking
+ * @workflow Combines base configuration with package-specific overrides and comprehensive ignore patterns
  *
- * @version 1.0.0
- * @author DAWLabs Team
- * @license MIT
+ * Configuration Strategy:
+ * - Base configuration: Inherits from eslint.base.js with JavaScript and TypeScript rules
+ * - Package-specific overrides: Customized rules for different package types and use cases
+ * - Global ignores: Comprehensive patterns to exclude build outputs, dependencies, and generated files
+ * - Workspace integration: Seamless integration with Turborepo and multi-package development
+ *
+ * Key Features:
+ * - TypeScript support with type checking and modern ES features
+ * - Specialized rules for CLI tools allowing console output for user interaction
+ * - Package-specific configuration inheritance and customization
+ * - Comprehensive ignore patterns for build artifacts and dependencies
+ * - Optimized for monorepo development with proper workspace handling
+ *
+ * Override Categories:
+ * - CLI Tools: Relaxed console restrictions for interactive tools
+ * - Libraries: Strict linting for reusable components
+ * - Applications: Balanced rules for production applications
+ * - Templates: Configurable rules for generated template files
+ *
+ * Integration Points:
+ * - Turborepo task orchestration and caching
+ * - Pre-commit hooks with lint-staged integration
+ * - IDE integration with VSCode ESLint extension
+ * - CI/CD pipeline quality gates
+ *
+ * Performance Considerations:
+ * - Optimized ignore patterns to reduce scanning overhead
+ * - Incremental linting with file change detection
+ * - Parallel execution support across package boundaries
+ *
+ * @example
+ * // Usage in CI/CD pipeline
+ * npx eslint . --ext .js,.ts --fix
+ *
+ * // Package-specific override example
+ * // tools/my-tool/.eslintrc.js would extend this base config
  */
 
 import baseConfig from './config/eslint.base.js';

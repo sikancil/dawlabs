@@ -1,5 +1,42 @@
 /**
- * {{description}} - Pure JavaScript Library
+ * {{description}} - Pure JavaScript Library Template
+ *
+ * @context Template-generated JavaScript library for the DAWLabs monorepo
+ * @purpose Provides a foundational library structure with configurable behavior and utility functions
+ * @integration Template serves as starting point for new JavaScript packages in the monorepo
+ * @workflow Generated from create-dawlabs-package tool with variable substitution for customization
+ *
+ * Template Features:
+ * - Configurable class-based architecture
+ * - Factory function for easy instantiation
+ * - Configuration management with merge capabilities
+ * - Multiple export patterns for compatibility
+ * - Placeholder system for customization
+ *
+ * Architecture Pattern:
+ * - Main class with configuration-driven behavior
+ * - Utility functions for streamlined usage
+ * - Both CommonJS and ES Module export support
+ * - Extensible design for additional functionality
+ *
+ * Variable Substitution:
+ * - {{className}}: Replaced with actual class name during generation
+ * - {{description}}: Replaced with package description
+ * - Additional variables can be added as needed
+ *
+ * Customization Points:
+ * - Implement the execute() method with core functionality
+ * - Add configuration validation and defaults
+ * - Extend with additional methods as needed
+ * - Add error handling and logging
+ *
+ * @example
+ * // After template generation with "MyLib" as className:
+ * const lib = createMyLib({ option: 'value' });
+ * const result = lib.execute(input);
+ * console.log(lib.getConfig());
+ *
+ * @template
  */
 
 // Core functionality

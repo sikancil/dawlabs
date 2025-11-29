@@ -1,3 +1,55 @@
+/**
+ * DAWLabs GitHub CLI Integration - Secure GitHub Operations Wrapper
+ *
+ * @context Core GitHub CLI integration utility for DAWLabs deployment and repository management
+ * @purpose Provides secure, validated access to GitHub CLI operations for automated workflows, repository management, and CI/CD integration
+ * @integration Used throughout the internal CLI system for repository operations, authentication checks, and GitHub API interactions
+ * @workflow Wraps GitHub CLI commands with security validation, repository root detection, and comprehensive error handling
+ *
+ * Security Features:
+ * - Command Validation: Whitelist-based validation prevents command injection attacks
+ * - API Endpoint Filtering: Restricted access to safe GitHub API endpoints only
+ * - Character Sanitization: Prevents dangerous shell characters and injection vectors
+ * - Path Traversal Protection: Validates repository root detection and prevents path manipulation
+ *
+ * Command Categories:
+ * - Repository: repo view, create, delete operations for repository management
+ * - Authentication: auth status, login, logout for GitHub CLI authentication
+ * - Issues & PRs: issue list, pr list for development workflow integration
+ * - Releases: release list, create for version management and deployment
+ * - Workflows: workflow list, run for CI/CD pipeline management
+ * - Secrets & Variables: secret list, variable list for configuration management
+ * - API: Safe API endpoint access for custom GitHub operations
+ *
+ * Error Handling Strategy:
+ * - Command Validation: Pre-execution validation with clear error messages
+ * - GitHub CLI Errors: Wrapped error messages with actionable guidance
+ * - Repository Detection: Fallback mechanisms for monorepo root detection
+ * - API Failures: Graceful degradation with detailed error reporting
+ *
+ * Integration Points:
+ * - NPM Publishing: Repository validation and trusted publishing setup
+ * - CI/CD Workflows: GitHub Actions workflow management and execution
+ * - Oracle Intelligence: Repository analysis and package discovery
+ * - Deployment Pipeline: Release management and deployment automation
+ *
+ * Performance Considerations:
+ * - Repository Caching: Efficient repository root detection with caching
+ * - Command Batching: Minimizes GitHub CLI process overhead
+ * - Error Fast-Fail: Early validation prevents unnecessary GitHub API calls
+ *
+ * @example
+ * // Get repository information securely
+ * const repoInfo = await getRepositoryInfo();
+ * console.log(`Repository: ${repoInfo.name}`);
+ *
+ * // Run validated GitHub CLI command
+ * const branches = runGhCommand('branch list --json name');
+ *
+ * // Check authentication status
+ * const authStatus = checkGitHubAuth();
+ */
+
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join, sep } from 'path';

@@ -309,7 +309,9 @@ async function attemptFixes(validation) {
 
 async function getWorkspacePackages() {
   try {
-    const output = execSync('pnpm ls --recursive --depth=0 --json', { encoding: 'utf8' });
+    const output = execSync('pnpm ls --recursive --depth=0 --json', {
+      encoding: 'utf8',
+    });
     return JSON.parse(output);
   } catch (_error) {
     return [];

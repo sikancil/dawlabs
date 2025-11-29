@@ -411,7 +411,10 @@ export class LearningEngine {
     }
 
     if (packageAnalysis.oracleResults.length < 4) {
-      riskFactors.push({ factor: 'Insufficient oracle coverage', severity: 0.5 });
+      riskFactors.push({
+        factor: 'Insufficient oracle coverage',
+        severity: 0.5,
+      });
     }
 
     if (packageAnalysis.analysis.conflicts.length > 0) {

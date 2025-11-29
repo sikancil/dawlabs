@@ -55,3 +55,8 @@ __mocks__/
 
 # Package Templates
 tools/create-dawlabs-package/templates/**/*
+.changeset/
+.github/
+*.json
+*.yml
+*.yaml

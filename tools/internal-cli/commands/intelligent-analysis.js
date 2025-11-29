@@ -2,7 +2,52 @@
 
 /**
  * Oracle Intelligence Analysis Command
- * Integrates our Oracle Intelligence system with CI/CD workflows
+ *
+ * @context Primary CLI interface for DAWLabs Oracle Intelligence deployment analysis
+ * @purpose Integrates Oracle Intelligence system with CI/CD workflows for automated deployment validation
+ * @integration Used by GitHub Actions workflows and CLI for package publishing readiness analysis
+ * @workflow Core component for intelligent deployment decisions and version compliance checking
+ *
+ * This command provides comprehensive package analysis using multiple oracle sources:
+ * - Real-time NPM registry validation
+ * - Version history analysis and compliance checking
+ * - Git history and build artifact validation
+ * - Multi-source consensus decision making
+ * - CI/CD pipeline integration with three output modes
+ *
+ * Output Modes:
+ * 1. Default: Human-readable console output with detailed analysis and recommendations
+ * 2. --json: Machine-readable JSON output for programmatic consumption
+ * 3. --ci-format: Clean, formatted summary optimized for CI/CD pipeline logs
+ *
+ * Key Features:
+ * - Version violation detection prevents publishing errors
+ * - Consensus-based analysis using 7 different oracle sources
+ * - Confidence scoring and reliability assessment
+ * - Conflict detection and resolution recommendations
+ * - GitHub Actions integration with OIDC authentication support
+ *
+ * Usage Examples:
+ * // Interactive human analysis
+ * node tools/internal-cli/index.js intelligent-analysis
+ *
+ * // Machine-readable JSON output
+ * node tools/internal-cli/index.js intelligent-analysis --json
+ *
+ * // CI/CD optimized format
+ * node tools/internal-cli/index.js intelligent-analysis --ci-format
+ *
+ * // Package-specific analysis
+ * node tools/internal-cli/index.js intelligent-analysis --package @dawlabs/ncurl
+ *
+ * // High-confidence requirement
+ * node tools/internal-cli/index.js intelligent-analysis --confidence-threshold 0.9
+ *
+ * Workflow Integration:
+ * - Called by GitHub Actions release workflow
+ * - Results used to determine publishing readiness
+ * - Version violations block deployment process
+ * - Consensus scores indicate deployment confidence
  */
 
 import { Command } from 'commander';
@@ -53,7 +98,59 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 
 /**
- * Run comprehensive intelligence analysis on all packages
+ * Run comprehensive intelligence analysis on workspace packages
+ *
+ * @returns {Promise<Array<Object>>} Analysis results for all processed packages
+ * @returns {Object} returns[].analysis - Fused analysis result from Oracle Intelligence system
+ * @returns {string} returns[].packageName - Name of the analyzed package
+ * @returns {string} returns[].version - Version of the analyzed package
+ * @returns {string} returns[].packagePath - Path to the package in the monorepo
+ * @returns {number} returns[].consensusScore - Confidence score (0.0-1.0) from consensus analysis
+ * @returns {number} returns[].analysisTime - Time taken for analysis in milliseconds
+ * @returns {Object} returns[].reliability - Reliability assessment of the analysis
+ * @returns {Array<Object>} returns[].oracleResults - Raw results from all oracle sources
+ *
+ * @workflow Orchestrates comprehensive package analysis using Oracle Intelligence system
+ * @integration Core analysis engine called by CLI interface and CI/CD workflows
+ * @purpose Provides intelligent deployment decisions using multi-source consensus analysis
+ *
+ * Analysis Algorithm:
+ * 1. Package Discovery: Get all workspace packages or specific package
+ * 2. Console Mode Handling: Configure output based on --json flag
+ * 3. Oracle Intelligence Analysis:
+ *    - Initialize OracleIntelligencePackageAnalyzer
+ *    - Analyze each package with all 7 oracle sources
+ *    - Calculate consensus scores and reliability metrics
+ *    - Detect version violations and conflicts
+ * 4. Progress Reporting: Show real-time analysis progress (non-JSON mode)
+ * 5. Validation Checks:
+ *    - Conflict detection with optional workflow failure
+ *    - Confidence threshold validation
+ * 6. Results Display:
+ *    - JSON mode: Clean machine-readable output
+ *    - Default mode: Detailed dashboard with recommendations
+ *    - CI format: Clean formatted summary for pipelines
+ *
+ * Error Handling Strategy:
+ * - Individual package errors don't stop overall analysis
+ * - Failed packages included in results with error details
+ * - Console output properly silenced in JSON mode
+ * - Verbose mode available for detailed error information
+ *
+ * Console Output Modes:
+ * - --json: No console output, only JSON to stdout
+ * - --ci-format: Clean formatted summary optimized for CI logs
+ * - Default: Rich console output with spinners, colors, and detailed analysis
+ *
+ * @example
+ * // Analyze all packages with rich output
+ * const results = await runIntelligentAnalysis();
+ *
+ * // Results include:
+ * // - Consensus confidence scores
+ * // - Version compliance status
+ * // - Conflict detection
+ * // - Publishing recommendations
  */
 async function runIntelligentAnalysis() {
   // Only use spinner in non-JSON mode
@@ -196,7 +293,64 @@ async function getSpecificPackage(packageName) {
 }
 
 /**
- * Main execution
+ * Main execution function with three-mode output system
+ *
+ * @returns {Promise<void>} Completes analysis and outputs results in appropriate format
+ * @throws {Error} Exits with error code 1 if analysis fails
+ *
+ * @workflow Orchestrates analysis execution and handles three different output modes
+ * @integration Entry point for both direct CLI execution and programmatic calls
+ * @purpose Provides appropriate output formatting for different consumption contexts
+ *
+ * Three-Mode Output System:
+ *
+ * 1. JSON Mode (--json flag):
+ *    - Pure machine-readable JSON output to stdout
+ *    - No console.log statements, no colors, no formatting
+ *    - Ideal for programmatic consumption and API integration
+ *    - Silent operation with only JSON results
+ *
+ * 2. CI Format Mode (--ci-format flag):
+ *    - Clean, formatted summary optimized for CI/CD pipeline logs
+ *    - Human-readable but structured for automated parsing
+ *    - Shows package status, confidence scores, and conflict counts
+ *    - Includes summary statistics for quick pipeline assessment
+ *
+ * 3. Default Mode (interactive):
+ *    - Rich console output with colors, spinners, and detailed analysis
+ *    - Comprehensive dashboard with recommendations and insights
+ *    - Full analysis results with confidence metrics and oracle details
+ *    - Ideal for interactive CLI usage and detailed investigation
+ *
+ * Output Format Examples:
+ *
+ * JSON Mode:
+ * ```json
+ * [{"packageName":"@dawlabs/ncurl","consensusScore":0.85,"analysis":{"state":"new-package"}}]
+ * ```
+ *
+ * CI Format:
+ * ```
+ * 📦 Oracle Intelligence Analysis Summary:
+ *   ✅ @dawlabs/ncurl@v0.0.2 (85% confidence)
+ * 📊 Summary: 1/1 packages ready for publishing
+ * ```
+ *
+ * Default Mode:
+ * - Interactive spinner during analysis
+ * - Detailed dashboard with color-coded status
+ * - Oracle intelligence breakdown and recommendations
+ * - Summary statistics with confidence metrics
+ *
+ * Error Handling:
+ * - All modes handle errors consistently with process.exit(1)
+ * - JSON mode: No error output to avoid polluting JSON stream
+ * - CI/Default modes: Formatted error messages with context
+ *
+ * @example
+ * // Called by CLI system with parsed options
+ * await main();
+ * // Outputs results based on selected mode
  */
 async function main() {
   try {
@@ -253,7 +407,48 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 export { runIntelligentAnalysis, main };
 
 /**
- * Run analysis with options passed directly (for integration with other modules)
+ * Run analysis with custom options for programmatic integration
+ *
+ * @param {Object} analysisOptions - Override options for this analysis execution
+ * @param {boolean} [analysisOptions.json] - Force JSON output mode
+ * @param {boolean} [analysisOptions.ciFormat] - Force CI format output mode
+ * @param {string} [analysisOptions.package] - Analyze specific package only
+ * @param {boolean} [analysisOptions.failOnConflicts] - Exit with error if conflicts detected
+ * @param {number} [analysisOptions.confidenceThreshold] - Minimum confidence threshold (0.0-1.0)
+ * @returns {Promise<Array<Object>>} Analysis results for all processed packages
+ *
+ * @workflow Provides programmatic interface with temporary option override capability
+ * @integration Used by other CLI modules and external systems for custom analysis execution
+ * @purpose Enables flexible integration while maintaining global option state isolation
+ *
+ * Option Override Strategy:
+ * 1. Save current global options state
+ * 2. Merge provided analysisOptions with global options
+ * 3. Execute analysis with overridden options
+ * 4. Handle output formatting based on final option state
+ * 5. Restore original global options (even if execution fails)
+ *
+ * Use Cases:
+ * - CI/CD workflow integration with custom parameters
+ * - Programmatic analysis from other CLI commands
+ * - Testing with specific option combinations
+ * - Batch processing with varied configurations
+ *
+ * Error Handling:
+ * - Guaranteed restoration of original options via finally block
+ * - Analysis errors don't affect option restoration
+ * - Consistent error reporting across all output modes
+ *
+ * @example
+ * // Run with custom confidence threshold for CI integration
+ * const results = await runAnalysisWithOptions({
+ *   json: true,
+ *   confidenceThreshold: 0.9,
+ *   failOnConflicts: true
+ * });
+ *
+ * // Original global options remain unchanged after execution
+ * console.log('Analysis completed with custom options');
  */
 export async function runAnalysisWithOptions(analysisOptions) {
   // Temporarily override the global options for this execution

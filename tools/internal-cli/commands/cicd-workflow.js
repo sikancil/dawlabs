@@ -1,3 +1,57 @@
+/**
+ * DAWLabs CI/CD Workflow Management Command - GitHub Actions Integration
+ *
+ * @context Core CI/CD workflow configuration and management command for the DAWLabs monorepo
+ * @purpose Provides comprehensive GitHub Actions workflow setup, validation, and management for automated package publishing and deployment
+ * @integration Used by CLI users and automation systems for GitHub Actions workflow configuration, verification, and execution
+ * @workflow Manages GitHub Actions workflows, OIDC authentication setup, and publishing pipeline automation
+ *
+ * CI/CD Strategy:
+ * - GitHub Actions: Primary CI/CD platform for automated workflows
+ * - OIDC Authentication: GitHub Actions token-based NPM publishing without exposed secrets
+ * - Oracle Intelligence Integration: Automated deployment validation and conflict detection
+ * - Release Automation: Multi-package publishing with proper sequencing and validation
+ * - Workflow Templates: Standardized workflow configurations for consistency
+ *
+ * Workflow Features:
+ * - Release Automation: Automated package publishing with version validation
+ * - Multi-Package Support: Sequential publishing across the monorepo packages
+ * - Validation Gates: Oracle Intelligence analysis before deployment
+ * - Rollback Support: Automated rollback mechanisms for failed deployments
+ * - Performance Monitoring: Workflow execution metrics and optimization
+ *
+ * Configuration Management:
+ * - Workflow Templates: Pre-configured GitHub Actions workflow templates
+ * - Environment Variables: Secure configuration management with GitHub secrets
+ * - Repository Settings: Proper repository configuration for trusted publishing
+ * - Branch Protection: Automated branch protection rules for main/master
+ * - Permissions Management: Least-privilege access controls for workflows
+ *
+ * Security Integration:
+ * - OIDC Trust: GitHub Actions-NPM trusted publishing relationship
+ * - Tokenless Publishing: No exposed NPM tokens in repository secrets
+ * - Repository Validation: Ensures workflows only run on trusted repositories
+ * - Access Controls: Granular permissions for workflow operations
+ * - Audit Trail: Comprehensive logging and workflow execution tracking
+ *
+ * Monitoring and Diagnostics:
+ * - Workflow Status: Real-time workflow execution monitoring
+ * - Performance Metrics: Workflow execution time and success rates
+ * - Error Analysis: Detailed error reporting and resolution guidance
+ * - Health Checks: Automated validation of workflow configuration
+ * - Rollback Monitoring: Automated monitoring and recovery capabilities
+ *
+ * @example
+ * // Setup CI/CD workflow interactively
+ * dawlabs-cli setup cicd-workflow
+ *
+ * // Verify existing workflow configuration
+ * dawlabs-cli verify cicd-workflow
+ *
+ * // Trigger workflow manually
+ * dawlabs-cli workflow trigger release.yml
+ */
+
 import chalk from 'chalk';
 import ora from 'ora';
 import inquirer from 'inquirer';

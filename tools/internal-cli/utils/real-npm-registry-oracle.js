@@ -1,6 +1,53 @@
 /**
- * Real NPM Registry Oracle - Actually checks npm registry for version conflicts
- * This fixes the critical false positive issue in the original deployment failure
+ * DAWLabs Real NPM Registry Oracle - Authentic NPM Registry Validation
+ *
+ * @context Critical Oracle Intelligence source providing real-time NPM registry validation for the DAWLabs deployment system
+ * @purpose Performs authentic NPM registry queries to validate package version existence and prevent false positive deployment failures
+ * @integration Core component of the Oracle Intelligence multi-source consensus system, providing the most reliable registry validation
+ * @workflow Queries NPM registry directly using npm view command and HTTP requests to ensure accurate package publishing decisions
+ *
+ * Oracle Intelligence Role:
+ * - Primary Authority: Most reliable source for package version existence validation
+ * - False Positive Prevention: Eliminates incorrect version conflict detection that plagued previous implementations
+ * - Consensus Weighting: High confidence scoring due to direct registry access
+ * - Deployment Safety: Critical for preventing publishing accidents and version conflicts
+ *
+ * Technical Implementation:
+ * - NPM CLI Integration: Uses npm view command for most reliable registry access
+ * - HTTP Fallback: Direct HTTP requests when CLI method fails
+ * - Performance Caching: 5-minute cache timeout to balance performance and accuracy
+ * - Error Resilience: Comprehensive error handling with graceful fallbacks
+ *
+ * Query Methods:
+ * - Primary: npm view command with JSON output and timeout protection
+ * - Fallback: Direct HTTP requests to NPM registry API
+ * - Caching: Intelligent caching with timestamp-based expiration
+ * - Validation: Multiple validation layers to ensure result accuracy
+ *
+ * Data Sources:
+ * - NPM Registry API: Direct access to official package registry
+ * - NPM CLI Tool: Leverages npm's built-in registry logic and error handling
+ * - Package Metadata: Extracts publication dates, versions, and package information
+ * - Registry Endpoints: Uses standard NPM registry endpoints for maximum compatibility
+ *
+ * Integration Points:
+ * - Multi-Oracle Analyzer: Provides consensus data for deployment decisions
+ * - Oracle Intelligence Dashboard: Supplies real-time registry validation data
+ * - CI/CD Pipeline: Validates package versions before deployment
+ * - Publishing Workflow: Prevents version conflicts and publishing accidents
+ *
+ * Security & Performance:
+ * - Timeout Protection: 10-second timeout prevents hanging operations
+ * - Error Isolation: Graceful error handling prevents system failures
+ * - Cache Management: Memory-efficient caching with automatic cleanup
+ * - Registry Security: Uses official NPM registry endpoints only
+ *
+ * @example
+ * // Check if package version exists in registry
+ * const oracle = new RealNpmRegistryOracle();
+ * const result = await oracle.checkPackageExists('@dawlabs/ncurl', '1.0.0');
+ * console.log(`Package exists: ${result.exists}`);
+ * console.log(`Confidence: ${result.confidence}`);
  */
 
 import { execSync } from 'child_process';
@@ -34,8 +81,6 @@ export class RealNpmRegistryOracle {
     }
 
     try {
-      console.log(`🔍 [RealNpmOracle] Checking npm registry for ${packageName}@${version}`);
-
       // Method 1: Use npm view command (most reliable)
       const result = this.checkWithNpmView(packageName, version);
 
@@ -46,9 +91,7 @@ export class RealNpmRegistryOracle {
       });
 
       return result;
-    } catch (error) {
-      console.log(`❌ [RealNpmOracle] Failed to check ${packageName}@${version}:`, error.message);
-
+    } catch {
       // Fall back to HTTP request if npm view fails
       return this.checkWithHttp(packageName, version);
     }
@@ -70,8 +113,6 @@ export class RealNpmRegistryOracle {
 
       // If we get here, the package exists
       const versionData = JSON.parse(result.trim());
-
-      console.log(`✅ [RealNpmOracle] Package exists: ${packageName}@${versionData}`);
 
       return {
         exists: true,
@@ -175,8 +216,6 @@ export class RealNpmRegistryOracle {
     }
 
     try {
-      console.log(`📋 [RealNpmOracle] Getting all versions for ${packageName}`);
-
       const command = `npm view ${packageName} versions --json`;
       const result = execSync(command, {
         encoding: 'utf8',
@@ -199,7 +238,6 @@ export class RealNpmRegistryOracle {
         timestamp: Date.now(),
       });
 
-      console.log(`📋 [RealNpmOracle] Found ${versions.length} versions for ${packageName}`);
       return versionData;
     } catch (error) {
       console.log(`❌ [RealNpmOracle] Failed to get versions for ${packageName}:`, error.message);
@@ -231,6 +269,9 @@ export class RealNpmRegistryOracle {
       recommendation: 'publish',
       confidence: packageExists.confidence,
       registryData: packageExists,
+      conflictType: null,
+      conflictSeverity: 'none',
+      suggestedVersion: null,
     };
 
     // CRITICAL: Detect actual version conflicts

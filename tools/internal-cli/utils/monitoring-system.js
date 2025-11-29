@@ -503,7 +503,10 @@ export class OracleIntelligenceMonitoringSystem extends EventEmitter {
         'performance',
         'warning',
         `Slow analysis detected: ${analysisRecord.responseTime}ms for ${analysisRecord.packageName}`,
-        { packageName: analysisRecord.packageName, responseTime: analysisRecord.responseTime },
+        {
+          packageName: analysisRecord.packageName,
+          responseTime: analysisRecord.responseTime,
+        },
       );
     }
 
@@ -513,7 +516,10 @@ export class OracleIntelligenceMonitoringSystem extends EventEmitter {
         'intelligence',
         'warning',
         `Low intelligence confidence: ${Math.round(analysisRecord.confidence * 100)}% for ${analysisRecord.packageName}`,
-        { packageName: analysisRecord.packageName, confidence: analysisRecord.confidence },
+        {
+          packageName: analysisRecord.packageName,
+          confidence: analysisRecord.confidence,
+        },
       );
     }
 
@@ -523,7 +529,10 @@ export class OracleIntelligenceMonitoringSystem extends EventEmitter {
         'oracle',
         'warning',
         `Insufficient oracle coverage: ${analysisRecord.oracleCount}/6 for ${analysisRecord.packageName}`,
-        { packageName: analysisRecord.packageName, oracleCount: analysisRecord.oracleCount },
+        {
+          packageName: analysisRecord.packageName,
+          oracleCount: analysisRecord.oracleCount,
+        },
       );
     }
   }

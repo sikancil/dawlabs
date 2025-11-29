@@ -257,13 +257,19 @@ export function validateGitHubCLI() {
 
   try {
     // Check if GitHub CLI is installed
-    const version = execSync('gh --version', { encoding: 'utf8', stdio: 'pipe' }).trim();
+    const version = execSync('gh --version', {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }).trim();
     result.version = version;
     result.available = true;
 
     // Check authentication
     try {
-      const authStatus = execSync('gh auth status', { encoding: 'utf8', stdio: 'pipe' });
+      const authStatus = execSync('gh auth status', {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      });
       result.authenticated = authStatus.includes('Logged in');
     } catch {
       result.authenticated = false;
@@ -299,7 +305,10 @@ export function validatePnpm() {
   };
 
   try {
-    const version = execSync('pnpm --version', { encoding: 'utf8', stdio: 'pipe' }).trim();
+    const version = execSync('pnpm --version', {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }).trim();
     result.version = version;
     result.available = true;
 
@@ -332,7 +341,10 @@ export function validateGit() {
 
   try {
     // Check if git is installed
-    const version = execSync('git --version', { encoding: 'utf8', stdio: 'pipe' }).trim();
+    const version = execSync('git --version', {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    }).trim();
     result.version = version;
     result.available = true;
 

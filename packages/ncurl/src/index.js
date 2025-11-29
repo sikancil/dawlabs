@@ -1,5 +1,48 @@
 /**
- * nCurl - A curl clone optimized for LLM cognitive patterns with intelligent HTTP inference
+ * nCurl - LLM-Optimized HTTP Client with Intelligent Request Processing
+ *
+ * @context Core HTTP client library in the DAWLabs monorepo optimized for AI/LLM interactions
+ * @purpose Provides intelligent HTTP request capabilities with automatic inference and LLM-friendly output formatting
+ * @integration Used across DAWLabs tools and CLI commands for HTTP operations with smart defaults
+ * @workflow Intelligently processes HTTP requests with automatic method detection, content handling, and error resolution
+ *
+ * Key Features:
+ * - Intelligent HTTP method detection based on URL patterns and data presence
+ * - LLM-friendly automatic JSON parsing and content-type handling
+ * - Smart protocol assumption (HTTPS by default for LLM convenience)
+ * - Comprehensive error handling with actionable suggestions
+ * - Verbose mode for debugging and request inspection
+ * - Built-in timeout and redirect management
+ *
+ * LLM Optimization:
+ * - Reduces cognitive load by making smart assumptions
+ * - Provides helpful error messages with actionable suggestions
+ * - Automatically handles JSON serialization/deserialization
+ * - Follows common LLM usage patterns and expectations
+ *
+ * Integration Points:
+ * - Used by CLI tools for API interactions
+ * - Integrated into build and deployment workflows
+ * - Provides foundation for other HTTP-based utilities
+ *
+ * @example
+ * import { main } from './index.js';
+ *
+ * // Simple GET request
+ * await main({ url: 'https://api.example.com/users' });
+ *
+ * // POST with JSON data
+ * await main({
+ *   url: 'https://api.example.com/users',
+ *   json: true,
+ *   data: { name: 'John', email: 'john@example.com' }
+ * });
+ *
+ * // Verbose debugging
+ * await main({
+ *   url: 'https://api.example.com/data',
+ *   verbose: true
+ * });
  */
 
 import { request } from 'undici';

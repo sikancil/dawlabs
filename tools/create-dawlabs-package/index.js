@@ -1,20 +1,54 @@
 #!/usr/bin/env node
 
 /**
- * DAWLabs Package Generator
+ * DAWLabs Package Generator - Comprehensive Monorepo Package Creation Tool
  *
- * A sophisticated CLI tool for generating new packages within the DAWLabs monorepo with
- * proper structure, configuration, and build setups. This tool ensures:
- * - Consistent package structure across all package types
- * - Proper build configurations with LLM-friendly features
- * - Optimized development workflows with TypeScript/JavaScript support
- * - Ready-to-use ESLint, Jest, and build tooling configurations
- * - Monorepo integration with proper workspace configuration
+ * @context Core CLI tool for creating new packages within the DAWLabs monorepo with standardized structure
+ * @purpose Generates consistently structured packages with proper build configurations, tooling, and monorepo integration
+ * @integration Used by developers to create new packages, CLI tools, libraries, and applications within the monorepo
+ * @workflow Processes package creation requests through template-based generation with variable substitution and configuration setup
  *
- * Architecture: Template-based generation with variable substitution
- * Templates: Comprehensive collection for different package types and purposes
- * Configuration: Automatic setup of build configs, ESLint, TypeScript, and testing
- * Integration: Seamless monorepo workspace integration
+ * Key Capabilities:
+ * - Template-based package generation for multiple package types and architectures
+ * - Automatic configuration setup (ESLint, Jest, TypeScript, build tools)
+ * - Monorepo workspace integration with proper dependency management
+ * - LLM-optimized package structures with intelligent defaults
+ * - Build system integration with Turborepo caching and optimization
+ *
+ * Supported Package Types:
+ * - CLI Tools: Command-line applications with executable output
+ * - NestJS Apps: Full-featured server applications with TypeScript
+ * - Libraries: Reusable components and utilities
+ * - Browser Libraries: Frontend packages with browser optimization
+ * - Node Libraries: Server-side packages with Node.js optimization
+ *
+ * Template System:
+ * - Variable substitution for dynamic content generation
+ * - Modular template structure for maintainability
+ * - Configuration templates for consistent tooling setup
+ * - Build configuration templates for different compilation targets
+ *
+ * Integration Features:
+ * - Automatic workspace configuration updates
+ * - Dependency injection and peer dependency management
+ * - Build system integration with task orchestration
+ * - Development workflow optimization with hot reloading
+ *
+ * Architecture Benefits:
+ * - Consistent package structure across the monorepo
+ * - Reduced setup time for new packages and components
+ * - Standardized tooling and development practices
+ * - Scalable monorepo growth with proper governance
+ *
+ * @example
+ * // Create a new CLI tool
+ * node tools/create-dawlabs-package/index.js my-cli-tool --type cli-tool
+ *
+ * // Create a NestJS application
+ * node tools/create-dawlabs-package/index.js my-app --type nestjs-app
+ *
+ * // Create with custom options
+ * node tools/create-dawlabs-package/index.js my-lib --type js-browser-lib --author "John Doe"
  */
 
 import { join, dirname } from 'path';

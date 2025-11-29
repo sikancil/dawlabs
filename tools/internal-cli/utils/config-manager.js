@@ -4,11 +4,68 @@ import chalk from 'chalk';
 
 /**
  * Configuration Manager for DAWLabs Monorepo
- * Manages identity.dawlabs.json and deployment.json configuration files
+ *
+ * @context Core configuration management system for DAWLabs deployment intelligence
+ * @purpose Manages identity.dawlabs.json and deployment.json configuration files with auto-detection
+ * @integration Used throughout the CLI system to provide unified configuration access
+ * @workflow Initializes, validates, and maintains monorepo configuration state
+ *
+ * This class provides comprehensive configuration management for:
+ * - Identity configuration (.identity.dawlabs.json) with repository and organization details
+ * - Deployment configuration (deployment.json) with CI/CD and Oracle Intelligence settings
+ * - Automatic monorepo root detection using multiple indicator files
+ * - Package discovery and classification across packages/, tools/, and apps/ directories
+ * - Configuration validation with detailed error reporting
+ * - Template-based initialization with interactive mode support
+ *
+ * Key Features:
+ * - Auto-detects monorepo root using .identity.dawlabs.json, pnpm-workspace.yaml, turbo.json, or lerna.json
+ * - Discovers and categorizes packages (library, cli, tool, app) automatically
+ * - Validates required fields and provides actionable error messages
+ * - Merges identity and deployment configurations for unified access
+ * - Supports both interactive and non-interactive configuration modes
+ *
+ * @example
+ * // Initialize configuration manager with auto-detected root
+ * const config = new ConfigManager();
+ *
+ * // Load and validate all configurations
+ * const allConfigs = config.loadAllConfigs();
+ * const issues = config.validateConfigs();
+ *
+ * // Discover packages in the monorepo
+ * const packages = config.discoverPackages();
+ * console.log(`Found ${packages.length} packages`);
  */
 export class ConfigManager {
   /**
    * Detect monorepo root by looking for indicator files
+   *
+   * @param {string} startPath - Directory path to start detection from (default: process.cwd())
+   * @returns {string} Detected monorepo root directory path
+   * @static
+   *
+   * @workflow Traverses up directory tree looking for monorepo indicator files
+   * @integration Used by constructor to auto-detect monorepo root when not explicitly provided
+   * @purpose Enables configuration system to work from any subdirectory within the monorepo
+   *
+   * Detection Algorithm:
+   * 1. Start from given path (or current working directory)
+   * 2. Look for indicator files in current directory:
+   *    - .identity.dawlabs.json (primary DAWLabs identifier)
+   *    - pnpm-workspace.yaml (pnpm workspaces)
+   *    - turbo.json (Turborepo)
+   *    - lerna.json (Lerna)
+   * 3. If no indicators found, move up one directory level
+   * 4. Repeat until indicators found or root directory reached
+   * 5. Return original path if no indicators found anywhere
+   *
+   * @example
+   * // Detect from current directory
+   * const root = ConfigManager.detectMonorepoRoot();
+   *
+   * // Detect from specific subdirectory
+   * const root = ConfigManager.detectMonorepoRoot('./packages/ncurl');
    */
   static detectMonorepoRoot(startPath = process.cwd()) {
     const indicatorFiles = [
@@ -33,6 +90,35 @@ export class ConfigManager {
     // If no indicators found, return the original path
     return startPath;
   }
+
+  /**
+   * Initialize Configuration Manager
+   *
+   * @param {string|null} rootPath - Explicit monorepo root path or null for auto-detection
+   * @constructor
+   *
+   * @workflow Sets up configuration file paths and initializes manager state
+   * @integration Entry point for all configuration operations throughout the CLI system
+   * @purpose Provides centralized configuration management with automatic path resolution
+   *
+   * Path Resolution Strategy:
+   * - If rootPath provided: Use as explicit monorepo root
+   * - If rootPath is null: Auto-detect using detectMonorepoRoot()
+   * - Initialize all configuration file paths relative to detected root
+   *
+   * Configuration Files Managed:
+   * - Identity Config: .identity.dawlabs.json (primary monorepo identity)
+   * - Identity Template: .identity.example.json (for initialization)
+   * - Deployment Config: tools/internal-cli/config/deployment.json
+   * - Deployment Template: tools/internal-cli/config/deployment.example.json
+   *
+   * @example
+   * // Auto-detect monorepo root from current directory
+   * const config = new ConfigManager();
+   *
+   * // Use explicit root path
+   * const config = new ConfigManager('/path/to/monorepo');
+   */
   constructor(rootPath = null) {
     // Auto-detect monorepo root if not provided
     this.rootPath = rootPath || ConfigManager.detectMonorepoRoot();
@@ -49,7 +135,25 @@ export class ConfigManager {
   }
 
   /**
-   * Load identity configuration
+   * Load identity configuration from .identity.dawlabs.json
+   *
+   * @returns {Object} Parsed identity configuration object
+   * @throws {Error} If configuration file not found or invalid JSON
+   *
+   * @workflow Loads and parses identity configuration file with error handling
+   * @integration Provides access to monorepo identity settings for all CLI operations
+   * @purpose Centralizes identity configuration access with validation
+   *
+   * Expected Configuration Structure:
+   * - monorepo.name: Repository name
+   * - monorepo.discoveredPackages: Array of discovered packages
+   * - organization.npm: NPM organization name
+   * - repository.url: Git repository URL
+   *
+   * @example
+   * const identity = config.loadIdentityConfig();
+   * console.log(`Repository: ${identity.repository.url}`);
+   * console.log(`Organization: ${identity.organization.npm}`);
    */
   loadIdentityConfig() {
     try {
@@ -63,7 +167,26 @@ export class ConfigManager {
   }
 
   /**
-   * Load deployment configuration
+   * Load deployment configuration from deployment.json
+   *
+   * @returns {Object} Parsed deployment configuration object
+   * @throws {Error} If configuration file not found or invalid JSON
+   *
+   * @workflow Loads and parses deployment configuration with CI/CD and Oracle Intelligence settings
+   * @integration Provides deployment settings for CI/CD workflow generation and validation
+   * @purpose Centralizes deployment configuration access for automated publishing workflows
+   *
+   * Expected Configuration Structure:
+   * - deployment.defaults: Default deployment settings (environment, workflowFile)
+   * - deployment.environments: Environment-specific configurations
+   * - oracleIntelligence: Oracle Intelligence system configuration
+   * - cicd: CI/CD pipeline settings and templates
+   *
+   * @example
+   * const deployment = config.loadDeploymentConfig();
+   * const defaults = deployment.deployment.defaults;
+   * console.log(`Default environment: ${defaults.environment}`);
+   * console.log(`Oracle Intelligence: ${deployment.oracleIntelligence.enabled ? 'Enabled' : 'Disabled'}`);
    */
   loadDeploymentConfig() {
     try {
@@ -77,7 +200,28 @@ export class ConfigManager {
   }
 
   /**
-   * Load both configurations and merge them
+   * Load both configurations and merge them into unified structure
+   *
+   * @returns {Object} Unified configuration object with identity, deployment, and merged properties
+   * @returns {Object} returns.identity - Identity configuration object
+   * @returns {Object} returns.deployment - Deployment configuration object
+   * @returns {Object} returns.merged - Merged configuration combining identity and deployment
+   * @throws {Error} If any configuration file cannot be loaded
+   *
+   * @workflow Loads identity and deployment configurations, then merges into unified structure
+   * @integration Primary method for accessing complete configuration across CLI system
+   * @purpose Provides single-point access to all configuration data with intelligent merging
+   *
+   * Merge Strategy:
+   * - identity: Preserved as-is for identity-specific access
+   * - deployment: Preserved as-is for deployment-specific access
+   * - merged: Combines identity properties with deployment.deployment namespace
+   *
+   * @example
+   * const configs = config.loadAllConfigs();
+   * console.log(`Repository: ${configs.identity.repository.url}`);
+   * console.log(`Environment: ${configs.merged.deployment.environment}`);
+   * console.log(`Oracle Intelligence: ${configs.deployment.oracleIntelligence.enabled}`);
    */
   loadAllConfigs() {
     const identity = this.loadIdentityConfig();
@@ -94,7 +238,42 @@ export class ConfigManager {
   }
 
   /**
-   * Discover packages in the monorepo
+   * Discover packages in the monorepo across standard directories
+   *
+   * @returns {Array<Object>} Array of discovered package objects with metadata
+   * @returns {string} returns[].name - Package name from package.json
+   * @returns {string} returns[].path - Relative path from monorepo root
+   * @returns {string} returns[].type - Package type (library/cli/tool/app)
+   * @returns {string} returns[].version - Package version from package.json
+   * @returns {boolean} returns[].private - Whether package is marked as private
+   *
+   * @workflow Scans standard monorepo directories and parses package.json files
+   * @integration Used by configuration system to maintain package registry and validate setup
+   * @purpose Automatic package discovery for monorepo management and deployment workflows
+   *
+   * Discovery Algorithm:
+   * 1. Scan packages/, tools/, and apps/ directories for subdirectories
+   * 2. Look for package.json files in each subdirectory
+   * 3. Parse valid package.json files and extract metadata
+   * 4. Determine package type based on location and content:
+   *    - cli: Has bin property in package.json
+   *    - tool: Located in tools/ directory
+   *    - app: Located in apps/ directory
+   *    - library: Default type for packages/ directory
+   * 5. Sort packages alphabetically by name
+   * 6. Return array of package objects with full metadata
+   *
+   * Error Handling:
+   * - Skips directories that cannot be read
+   * - Warns about invalid package.json files but continues processing
+   * - Returns empty array if no packages found
+   *
+   * @example
+   * const packages = config.discoverPackages();
+   * console.log(`Found ${packages.length} packages:`);
+   * packages.forEach(pkg => {
+   *   console.log(`- ${pkg.name}@${pkg.version} (${pkg.type})`);
+   * });
    */
   discoverPackages() {
     const packageDirs = ['packages', 'tools', 'apps'];
